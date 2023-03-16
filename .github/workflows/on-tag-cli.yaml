@@ -1,0 +1,114 @@
+name: tag-cli
+on:
+  push:
+    tags:
+    - 'v[0-9]+.[0-9]+.[0-9]+'  # Only build tag with semantic versioning format
+
+permissions:
+  contents: read
+
+jobs:
+
+  test:
+    uses: ./.github/workflows/test.yaml
+    permissions:
+      contents: read
+      security-events: write
+    with:
+      go-version: ^1.20.1
+      scan-severity: 'CRITICAL,HIGH,MEDIUM'
+
+  release:
+    outputs:
+      hashes: ${{ steps.checksum.outputs.hashes }}
+    runs-on: ubuntu-latest
+    needs:
+    - test
+    permissions:
+      contents: write
+    steps:
+    - name: Setup Go
+      uses: actions/setup-go@6edd4406fa81c3da01a34fa6f6343087c207a568  # v3.5.0
+      with:
+        go-version: ^1.20.1
+    - run: go version
+    - name: Cache Go Modules
+      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8  # v3.3.1
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    - name: Checkout Code
+      uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c  # v3.3.0
+    - name: Prune Git History
+      run: git fetch --prune --unshallow
+    - name: Install Syft
+      uses: anchore/sbom-action/download-syft@07978da4bdb4faa726e52dfc6b1bed63d4b56479  # v0.13.3
+      with:
+        version: v0.13.1
+    - name: Build CLI
+      uses: goreleaser/goreleaser-action@f82d6c1c344bcacabba2c841718984797f664a6b  # v4.2.0
+      id: releaser
+      with:
+        distribution: goreleaser
+        version: latest
+        args: release --clean
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+    - name: Gen Hashes
+      id: checksum
+      env:
+        ARTIFACTS: "${{ steps.releaser.outputs.artifacts }}"
+      run: |
+        set -euo pipefail
+        checksum_file=$(echo "$ARTIFACTS" | jq -r '.[] | select (.type=="Checksum") | .path')
+        echo "hashes=$(cat $checksum_file | base64 -w0)" >> $GITHUB_OUTPUT
+
+  provenance:
+    needs:
+    - release
+    permissions:
+      actions: read    # To read the workflow path.
+      id-token: write  # To sign the provenance.
+      contents: write  # To add assets to a release.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.5.0
+    with:
+      base64-subjects: "${{ needs.release.outputs.hashes }}"
+      upload-assets: true
+      compile-generator: true
+
+  verify:
+    env:
+      ATT_FILE_NAME: "multiple.intoto.jsonl"
+    needs:
+    - release
+    - provenance
+    runs-on: ubuntu-latest
+    permissions: read-all
+    steps:
+      - name: Install SLSA Verifier
+        uses: slsa-framework/slsa-verifier/actions/installer@a43888265e1f6aae98c924538298944f2721dcf0  # v2.0.1
+      - name: Download Assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh -R "$GITHUB_REPOSITORY" release download "$GITHUB_REF_NAME" -p "aactl*"
+          gh -R "$GITHUB_REPOSITORY" release download "$GITHUB_REF_NAME" -p "$ATT_FILE_NAME"
+      - name: Verify Assets
+        env:
+          CHECKSUMS: ${{ needs.release.outputs.hashes }}
+        run: |
+          set -euo pipefail
+          checksums=$(echo "$CHECKSUMS" | base64 -d)
+          while read -r line; do
+              artifact=$(echo $line | cut -d ' ' -f2)
+              slsa-verifier verify-artifact --provenance-path "$ATT_FILE_NAME" \
+                                            --source-uri "github.com/$GITHUB_REPOSITORY" \
+                                            --source-tag "$GITHUB_REF_NAME" \
+                                            "$artifact"
+          done <<<"$checksums"
