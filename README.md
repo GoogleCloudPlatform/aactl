@@ -1,6 +1,6 @@
-# # Google Cloud Platform Artifact Analysis Import Sample
+# # Google Cloud Platform Artifact Analysis Import
 
-The `aactl` CLI demonstrates data import from vulnerability scanner reports into [Container Analysis service](https://cloud.google.com/container-analysis/docs/container-analysis) using its [REST API](https://cloud.google.com/container-analysis/docs/reference/rest). 
+Google [Container Analysis service](https://cloud.google.com/container-analysis/docs/container-analysis) data import utility, supports OSS vulnerability scanner reports, SLSA provenance, and sigstore attestations.
 
 ```shell
 aactl import --project $project \
@@ -39,7 +39,6 @@ gcloud artifacts docker images list $repo \
 You can install `aactl` CLI using one of the following ways:
 
 * [Go](#go)
-* [Homebrew](#homebrew)
 * [RHEL/CentOS](#rhelcentos)
 * [Debian/Ubuntu](#debianubuntu)
 * [Binary](#binary)
@@ -53,17 +52,6 @@ If you have Go 1.17 or newer, you can install latest `aactl` using:
 ```shell
 go install github.com/GoogleCloudPlatform/aactl/cmd/aactl@latest
 ```
-
-## Homebrew
-
-On Mac or Linux, you can install `aactl` with [Homebrew](https://brew.sh/):
-
-```shell
-brew tap GoogleCloudPlatform/aactl
-brew install aactl
-```
-
-New release will be automatically picked up when you run `brew upgrade`
 
 ## RHEL/CentOS
 
