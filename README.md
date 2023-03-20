@@ -1,4 +1,4 @@
-# # Google Cloud Platform Artifact Analysis Import
+# # Google Cloud Platform Artifact Analysis Import Utility
 
 Google [Container Analysis service](https://cloud.google.com/container-analysis/docs/container-analysis) data import utility, supports OSS vulnerability scanner reports, SLSA provenance, and sigstore attestations.
 
