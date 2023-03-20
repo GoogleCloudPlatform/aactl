@@ -76,6 +76,30 @@ changelog:
     - typo
     - "version bump"
 
+brews:
+- tap:
+    owner: GoogleCloudPlatform
+    name: aactl
+    token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+  homepage: "https://github.com/GoogleCloudPlatform/aactl"
+  description: "Vulnerability management tool."
+  folder: Formula
+  license: "Apache-2.0"
+  test: |
+    system "#{bin}/aactl --version"
+
+nfpms:
+- file_name_template: "aactl-{{.Version}}_{{.Os}}-{{.Arch}}"
+  homepage: https://github.com/GoogleCloudPlatform/aactl/
+  description: "Vulnerability management tool."
+  maintainer: aactl developers <aactl@google.com>
+  license: Apache 2.0
+  vendor: aactl developers
+  formats:
+  - deb
+  - rpm
+  bindir: /usr/bin
+
 universal_binaries:
 - replace: true
   name_template: 'aactl'
