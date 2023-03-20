@@ -39,6 +39,7 @@ gcloud artifacts docker images list $repo \
 You can install `aactl` CLI using one of the following ways:
 
 * [Go](#go)
+* [Homebrew](#homebrew)
 * [RHEL/CentOS](#rhelcentos)
 * [Debian/Ubuntu](#debianubuntu)
 * [Binary](#binary)
@@ -52,6 +53,18 @@ If you have Go 1.17 or newer, you can install latest `aactl` using:
 ```shell
 go install github.com/GoogleCloudPlatform/aactl/cmd/aactl@latest
 ```
+
+## Homebrew
+
+On Mac or Linux, you can install `aactl` with [Homebrew](https://brew.sh/):
+
+```shell
+brew tap GoogleCloudPlatform/aactl https://github.com/GoogleCloudPlatform/aactl
+brew install aactl
+```
+
+New release will be automatically picked up when you run `brew upgrade`
+
 
 ## RHEL/CentOS
 
