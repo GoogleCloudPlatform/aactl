@@ -27,7 +27,7 @@ jobs:
     env:
       IMG_NAME: aactl
       PROVIDER_ID: projects/689738033528/locations/global/workloadIdentityPools/aactl-github-pool/providers/github-provider
-      REG_URI: us-west1-docker.pkg.dev/cloudy-build/aactl 
+      REG_URI: us-west1-docker.pkg.dev/cloudy-build/aactl
       SA_EMAIL: aactl-github-actions-user@cloudy-build.iam.gserviceaccount.com
       PROJECT_ID: cloudy-build
 
