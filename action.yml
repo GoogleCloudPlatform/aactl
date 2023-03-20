@@ -15,7 +15,9 @@
 # action.yml
 name: aactl
 description: 'Import vulnerabilities to Google Container Analysis'
-
+branding:
+  icon: arrow-up
+  color: gray-dark
 inputs:
   project:
     description: GCP Project ID'
@@ -29,21 +31,6 @@ inputs:
   format:
     description: 'Format of the vulnerability file'
     required: true
-
 runs:
   using: docker
-  image: docker://us-west1-docker.pkg.dev/cloudy-build/aactl/aactl:latest
-  args:
-    - import
-    - --project
-    - ${{ inputs.project }}
-    - --source
-    - ${{ inputs.digest }}
-    - --file
-    - ${{ inputs.file }}
-    - --format
-    - ${{ inputs.format }}
-
-branding:
-  icon: arrow-up
-  color: gray-dark
+  image: docker://us-west1-docker.pkg.dev/cloudy-build/aactl/action:latest
