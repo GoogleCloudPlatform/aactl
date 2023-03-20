@@ -17,10 +17,10 @@ none
 
 Below example, shows how to import vulnerabilities from previously generated report.
 
-> Make sure to use the latest tag release (e.g. `v0.2.14`)
+> Make sure to use the latest tag release from [here](https://github.com/GoogleCloudPlatform/aactl/releases)
 
 ```yaml
-uses: GoogleCloudPlatform/aactl@v0.2.14
+uses: GoogleCloudPlatform/aactl@v0.3.4`
 with:
   project: ${{ env.PROJECT_ID }}
   digest: ${{ steps.build.outputs.digest }}

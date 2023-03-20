@@ -31,6 +31,9 @@ inputs:
   format:
     description: 'Format of the vulnerability file'
     required: true
+outputs:
+  result:
+    description: 'Result of the import'
 runs:
   using: docker
   image: docker://us-west1-docker.pkg.dev/cloudy-build/aactl/action:latest

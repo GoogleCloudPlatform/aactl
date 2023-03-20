@@ -49,6 +49,6 @@ func main() {
 		a.Fatalf("error importing vulnerabilities, got %s", err)
 	}
 
-	// TODO: add output params with the number of vulnerabilities imported
-	a.SetOutput("import_count", "0")
+	// TODO: add more meaningful output params (e.g. number of vulns imported)
+	a.SetOutput("result", "ok")
 }
