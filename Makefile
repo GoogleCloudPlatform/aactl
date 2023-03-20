@@ -30,7 +30,7 @@ upgrade: ## Upgrades all dependancies
 	go mod vendor
 
 .PHONY: test
-test: tidy ## Runs unit tests
+test: tidy lint ## Runs unit tests
 	mkdir -p tmp
 	go test -short -count=1 -race -covermode=atomic -coverprofile=cover.out ./...
 
