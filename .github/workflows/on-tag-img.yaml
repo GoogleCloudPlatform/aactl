@@ -45,7 +45,6 @@ jobs:
       cosign_version: ${{ steps.conf.outputs.cosign_version }}
       err_on_vulnerability_sev: ${{ steps.conf.outputs.err_on_vulnerability_sev }}
       go_version: ${{ steps.conf.outputs.go_version }}
-      image_name: ${{ steps.conf.outputs.image_name }}
       provider_id: ${{ steps.conf.outputs.provider_id }}
       registry_uri: ${{ steps.conf.outputs.registry_uri }}
       service_account: ${{ steps.conf.outputs.service_account }}
@@ -59,7 +58,6 @@ jobs:
         echo "cosign_version=${{ env.COSIGN_VERSION }}" >> $GITHUB_OUTPUT
         echo "err_on_vulnerability_sev=${{ env.ERR_VULNERABILITY_SEV }}" >> $GITHUB_OUTPUT
         echo "go_version=${{ env.GO_VERSION }}" >> $GITHUB_OUTPUT
-        echo "image_name=${{ env.IMG_NAME }}" >> $GITHUB_OUTPUT
         echo "provider_id=${{ env.PROVIDER_ID }}" >> $GITHUB_OUTPUT
         echo "registry_uri=${{ env.REG_URI }}" >> $GITHUB_OUTPUT
         echo "service_account=${{ env.SA_EMAIL }}" >> $GITHUB_OUTPUT
@@ -90,7 +88,6 @@ jobs:
       auth_provider: ${{ needs.conf.outputs.provider_id }}
       auth_user: ${{ needs.conf.outputs.service_account }}
       go_version: ${{ needs.conf.outputs.go_version }}
-      image_name: ${{ needs.conf.outputs.image_name }}
       image_repo: ${{ needs.conf.outputs.registry_uri }}
 
   sign:
@@ -125,6 +122,7 @@ jobs:
       auth_user: ${{ needs.conf.outputs.service_account }}
       image_digest: ${{ needs.image.outputs.digest }}
 
+  # Implements import using the newly built image from the 'image' job.
   import:
     needs:
     - conf

@@ -60,6 +60,7 @@ jobs:
         workload_identity_provider: ${{ inputs.auth_provider }}
         service_account: ${{ inputs.auth_user }}
 
+    # Scan the image for vulnerabilities using Trivy
     - id: scan
       name: Vulnerability Scan
       uses: aquasecurity/trivy-action@master
@@ -71,6 +72,10 @@ jobs:
         timeout: 5m
         hide-progress: true
 
+    # Import the vulnerability scan report to Google Container Analysis
+    # Note: In this one repo only, do not pin this action by commit as
+    #       that will create never-ending loop of new dependabot PRs
+    #       which, you guest it, create a new commit hash.
     - uses: GoogleCloudPlatform/aactl@main
       with:
         project: ${{ inputs.target_project }}
