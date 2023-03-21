@@ -20,41 +20,37 @@ import (
 	"github.com/pkg/errors"
 )
 
-type ImportSigstoreOptions struct {
+// AttestationOptions are the options for importing an attestation.
+type AttestationOptions struct {
 	// Project is the ID of the project to import the report into.
 	Project string
 
 	// Source is the URI of the image from which the report was generated.
 	Source string
 
-	// Format of the metadata type to import.
-	Format SigstoreFormat
-
 	// Quiet suppresses output
 	Quiet bool
 }
 
-func (i *ImportSigstoreOptions) Validate() error {
-	if i.Project == "" {
+// Validate validates the options.
+func (o *AttestationOptions) Validate() error {
+	if o.Project == "" {
 		return ErrMissingProject
 	}
 
 	// Validate URL and ensure that scheme is specified
-	if i.Source == "" {
+	if o.Source == "" {
 		return ErrMissingSource
 	}
 
-	u, err := url.Parse(i.Source)
+	u, err := url.Parse(o.Source)
 	if err != nil {
 		return errors.Wrap(ErrInvalidSource, err.Error())
 	}
 	if u.Scheme == "" {
 		u.Scheme = ""
 	}
-	i.Source = u.String()
+	o.Source = u.String()
 
-	if i.Format == SigstoreFormatUnknown {
-		return ErrMissingFormat
-	}
 	return nil
 }

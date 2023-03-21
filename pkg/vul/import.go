@@ -20,8 +20,8 @@ import (
 
 	ca "cloud.google.com/go/containeranalysis/apiv1"
 	"github.com/GoogleCloudPlatform/aactl/pkg/convert"
-	"github.com/GoogleCloudPlatform/aactl/pkg/src"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
+	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	g "google.golang.org/genproto/googleapis/grafeas/v1"
@@ -29,14 +29,14 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func Import(ctx context.Context, opt *types.ImportOptions) error {
+func Import(ctx context.Context, opt *types.VulnerabilityOptions) error {
 	if opt == nil {
 		return errors.New("options required")
 	}
 	if err := opt.Validate(); err != nil {
 		return errors.Wrap(err, "error validating options")
 	}
-	s, err := src.NewSource(opt)
+	s, err := utils.NewFileSource(opt.File, opt.Source)
 	if err != nil {
 		return errors.Wrap(err, "error creating source")
 	}
@@ -46,7 +46,7 @@ func Import(ctx context.Context, opt *types.ImportOptions) error {
 		return errors.Wrap(err, "error getting converter")
 	}
 
-	list, err := c(ctx, s)
+	list, err := c(s)
 	if err != nil {
 		return errors.Wrap(err, "error converting source")
 	}

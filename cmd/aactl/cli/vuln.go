@@ -23,8 +23,8 @@ import (
 
 var (
 	impCmd = &c.Command{
-		Name:    "import",
-		Aliases: []string{"imp"},
+		Name:    "vulnerability",
+		Aliases: []string{"vul", "vuln", "vulns"},
 		Usage:   "import vulnerabilities from file",
 		Action:  importCmd,
 		Flags: []c.Flag{
@@ -42,7 +42,7 @@ func importCmd(c *c.Context) error {
 		return errors.Wrap(err, "error parsing source format")
 	}
 
-	opt := &types.ImportOptions{
+	opt := &types.VulnerabilityOptions{
 		Project: c.String(projectFlag.Name),
 		Source:  c.String(sourceFlag.Name),
 		File:    c.String(fileFlag.Name),

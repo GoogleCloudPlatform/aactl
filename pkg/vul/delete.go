@@ -27,7 +27,7 @@ import (
 
 // deleteNoteOccurrences deletes notes and occurrences. Used for debugging.
 // nolint:unused
-func deleteNoteOccurrences(ctx context.Context, opt *types.ImportOptions, list map[string]types.NoteOccurrences) error {
+func deleteNoteOccurrences(ctx context.Context, opt *types.VulnerabilityOptions, list map[string]types.NoteOccurrences) error {
 	c, err := ca.NewClient(ctx)
 	if err != nil {
 		return errors.Wrap(err, "error creating client")

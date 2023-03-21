@@ -15,42 +15,35 @@
 package cli
 
 import (
-	"github.com/GoogleCloudPlatform/aactl/pkg/sigstore"
+	"github.com/GoogleCloudPlatform/aactl/pkg/attestation"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/pkg/errors"
 	c "github.com/urfave/cli/v2"
 )
 
 var (
-	impSigstoreCmd = &c.Command{
-		Name:    "import-sigstore",
-		Aliases: []string{"impst"},
-		Usage:   "import Sigstore-format metadata",
-		Action:  importSigstoreCmd,
+	attestCmd = &c.Command{
+		Name:    "attestation",
+		Aliases: []string{"att", "attest"},
+		Usage:   "import attestation metadata",
+		Action:  attestationCmd,
 		Flags: []c.Flag{
 			projectFlag,
 			sourceFlag,
-			formatFlag,
 		},
 	}
 )
 
-func importSigstoreCmd(c *c.Context) error {
-	f, err := types.ParseSigstoreFormat(c.String(formatFlag.Name))
-	if err != nil {
-		return errors.Wrap(err, "error parsing source format")
-	}
-
-	opt := &types.ImportSigstoreOptions{
+func attestationCmd(c *c.Context) error {
+	opt := &types.AttestationOptions{
 		Project: c.String(projectFlag.Name),
 		Source:  c.String(sourceFlag.Name),
-		Format:  f,
 		Quiet:   isQuiet(c),
 	}
 
 	printVersion(c)
 
-	if err := sigstore.Import(c.Context, opt); err != nil {
+	if err := attestation.Import(c.Context, opt); err != nil {
 		return errors.Wrap(err, "error executing command")
 	}
 
