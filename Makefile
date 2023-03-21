@@ -30,7 +30,7 @@ upgrade: ## Upgrades all dependancies
 	go mod vendor
 
 .PHONY: test
-test: tidy lint ## Runs unit tests
+test: tidy ## Runs unit tests
 	mkdir -p tmp
 	go test -short -count=1 -race -covermode=atomic -coverprofile=cover.out ./...
 
@@ -49,6 +49,9 @@ lint-go: ## Lints the entire project using go
 .PHONY: lint-yaml
 lint-yaml: ## Runs yamllint on all yaml files (brew install yamllint)
 	yamllint -c .yamllint $(YAML_FILES)
+
+.PHONY: valid
+valid: tidy test lint ## Runs pre-submit checks locally (unit tests, lint go/yaml)
 
 .PHONY: build
 build: tidy ## Builds CLI binary
