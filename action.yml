@@ -36,7 +36,7 @@ outputs:
     description: 'Result of the import'
 runs:
   using: docker
-  image: docker://us-west1-docker.pkg.dev/cloudy-build/aactl/action:latest
+  image: docker://us-west1-docker.pkg.dev/cloudy-build/aactl/aactl:latest
   args:
     - import
     - --project=${{ inputs.project }}
