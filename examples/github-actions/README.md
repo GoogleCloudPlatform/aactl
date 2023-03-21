@@ -9,10 +9,6 @@ In addition to being used as a CLI, `aactl` can also be used as a builder.
 * `file` - (required) Path to the vulnerability file
 * `format` - (required) Format of the vulnerability file
 
-## outputs
-
-none
-
 ## usage
 
 Below example, shows how to import vulnerabilities from previously generated report.
@@ -22,6 +18,7 @@ Below example, shows how to import vulnerabilities from previously generated rep
 ```yaml
 uses: GoogleCloudPlatform/aactl@v0.3.4`
 with:
+  type: vulnerability
   project: ${{ env.PROJECT_ID }}
   digest: ${{ steps.build.outputs.digest }}
   file: ${{ steps.scan.outputs.output }}

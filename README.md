@@ -8,6 +8,8 @@ Google [Container Analysis (AA)](https://cloud.google.com/container-analysis/doc
 
 `aactl` supports imports of two data types: `vulnerability` and `attestation`.
 
+> In addition to CLI, `aactl` can also be used in your CI/CD pipeline as a Google Cloud Build builder ([example](examples/cloud-build/README.md)) or GitHub Actions action ([examples](examples/github-actions/README.md)).
+
 ### Vulnerability 
 
 To import vulnerabilities output by either [grype](https://github.com/anchore/grype), [snyk](https://github.com/snyk/cli), [trivy](https://github.com/aquasecurity/trivy) scanners, start by exporting the report in JSON format: 
@@ -51,8 +53,7 @@ gcloud artifacts docker images list $repo \
 In addition to vulnerabilities, `aactl` can also import [sigstore](https://github.com/sigstore) attestations:
 
 ```shell
-aactl attestation --project $project \
-                  --source $image \
+aactl attestation --project $project --source $image
 ```
 
 > The $image variable in the above example is the fully qualified URI of the image including its digest (e.g. `us-docker.pkg.dev/project/repo/image@sha256:397d453...`).

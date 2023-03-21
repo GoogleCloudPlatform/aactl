@@ -22,23 +22,23 @@ inputs:
   project:
     description: GCP Project ID'
     required: true
+  type: 
+    description: 'Type of data to import'
+    required: true
   digest:
     description: 'Image digest'
     required: true
   file:
     description: 'Path to the vulnerability file'
-    required: true
+    required: false
   format:
     description: 'Format of the vulnerability file'
-    required: true
-outputs:
-  result:
-    description: 'Result of the import'
+    required: false
 runs:
   using: docker
   image: docker://us-west1-docker.pkg.dev/cloudy-build/aactl/aactl:latest
   args:
-    - import
+    - ${{ inputs.type }}
     - --project=${{ inputs.project }}
     - --source=${{ inputs.digest }}
     - --file=${{ inputs.file }}

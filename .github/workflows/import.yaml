@@ -76,8 +76,10 @@ jobs:
     # Note: In this one repo only, do not pin this action by commit as
     #       that will create never-ending loop of new dependabot PRs
     #       which, you guest it, create a new commit hash.
-    - uses: GoogleCloudPlatform/aactl@main
+    # TODO: Implement attestation import.
+    - uses: GoogleCloudPlatform/aactl/@main
       with:
+        type: vulnerability
         project: ${{ inputs.target_project }}
         digest: ${{ inputs.image_digest }}
         file: ${{ inputs.report_path }}
