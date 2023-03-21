@@ -20,7 +20,7 @@ import (
 
 	"github.com/pkg/errors"
 	dsselib "github.com/secure-systems-lab/go-securesystemslib/dsse"
-	"github.com/sigstore/cosign/pkg/oci"
+	"github.com/sigstore/cosign/v2/pkg/oci"
 )
 
 type DecodedEnvelope struct {
@@ -35,8 +35,11 @@ func AttestationToEnvelope(att oci.Signature) (*dsselib.Envelope, error) {
 	}
 
 	env := &dsselib.Envelope{}
-	err = json.Unmarshal(payload, env)
-	return env, err
+	if err = json.Unmarshal(payload, env); err != nil {
+		return nil, errors.Wrap(err, "error unmarshalling DSSE env")
+	}
+
+	return env, nil
 }
 
 func GetDecodedEnvelope(env *dsselib.Envelope) (*DecodedEnvelope, error) {
