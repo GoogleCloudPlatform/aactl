@@ -88,6 +88,11 @@ tagless: ## Delete the current release tag
 	git tag -d $(RELEASE_VERSION)
 	git push --delete origin $(RELEASE_VERSION)
 
+.PHONY: rebase
+rebase: ## Rebase the current branch from main
+	git fetch
+	git rebase origin/main
+
 .PHONY: clean
 clean: ## Cleans bin and temp directories
 	go clean

@@ -25,7 +25,10 @@ on:
         description: 'Image name (default: action)'
         required: false
         type: string
-        default: action
+      docker_file:
+        description: 'Path to Dockerfile'
+        required: true
+        type: string
       auth_provider:
         description: 'OIDC provider ID'
         required: true
@@ -97,7 +100,7 @@ jobs:
       uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4.0.0
       with:
         context: .
-        file: cmd/action/Dockerfile
+        file: ${{ inputs.docker_file }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
