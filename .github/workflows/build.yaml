@@ -29,7 +29,6 @@ on:
         description: 'Path to Dockerfile'
         required: true
         type: string
-        default: action
       auth_provider:
         description: 'OIDC provider ID'
         required: true
