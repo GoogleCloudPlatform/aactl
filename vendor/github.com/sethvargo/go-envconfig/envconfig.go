@@ -14,55 +14,54 @@
 
 // Package envconfig populates struct fields based on environment variable
 // values (or anything that responds to "Lookup"). Structs declare their
-// environment dependencies using the `env` tag with the key being the name of
+// environment dependencies using the "env" tag with the key being the name of
 // the environment variable, case sensitive.
 //
-//     type MyStruct struct {
-//         A string `env:"A"` // resolves A to $A
-//         B string `env:"B,required"` // resolves B to $B, errors if $B is unset
-//         C string `env:"C,default=foo"` // resolves C to $C, defaults to "foo"
+//	type MyStruct struct {
+//	  A string `env:"A"` // resolves A to $A
+//	  B string `env:"B,required"` // resolves B to $B, errors if $B is unset
+//	  C string `env:"C,default=foo"` // resolves C to $C, defaults to "foo"
 //
-//         D string `env:"D,required,default=foo"` // error, cannot be required and default
-//         E string `env:""` // error, must specify key
-//     }
+//	  D string `env:"D,required,default=foo"` // error, cannot be required and default
+//	  E string `env:""` // error, must specify key
+//	}
 //
 // All built-in types are supported except Func and Chan. If you need to define
 // a custom decoder, implement Decoder:
 //
-//     type MyStruct struct {
-//         field string
-//     }
+//	type MyStruct struct {
+//	  field string
+//	}
 //
-//     func (v *MyStruct) EnvDecode(val string) error {
-//         v.field = fmt.Sprintf("PREFIX-%s", val)
-//         return nil
-//     }
+//	func (v *MyStruct) EnvDecode(val string) error {
+//	  v.field = fmt.Sprintf("PREFIX-%s", val)
+//	  return nil
+//	}
 //
 // In the environment, slices are specified as comma-separated values:
 //
-//     export MYVAR="a,b,c,d" // []string{"a", "b", "c", "d"}
+//	export MYVAR="a,b,c,d" // []string{"a", "b", "c", "d"}
 //
 // In the environment, maps are specified as comma-separated key:value pairs:
 //
-//     export MYVAR="a:b,c:d" // map[string]string{"a":"b", "c":"d"}
+//	export MYVAR="a:b,c:d" // map[string]string{"a":"b", "c":"d"}
 //
 // If you need to modify environment variable values before processing, you can
 // specify a custom mutator:
 //
-//     type Config struct {
-//         Password `env:"PASSWORD_SECRET"`
-//     }
+//	type Config struct {
+//	  Password `env:"PASSWORD_SECRET"`
+//	}
 //
-//     func resolveSecretFunc(ctx context.Context, key, value string) (string, error) {
-//         if strings.HasPrefix(value, "secret://") {
-//             return secretmanager.Resolve(ctx, value) // example
-//         }
-//         return value, nil
-//     }
+//	func resolveSecretFunc(ctx context.Context, key, value string) (string, error) {
+//	  if strings.HasPrefix(value, "secret://") {
+//	    return secretmanager.Resolve(ctx, value) // example
+//	  }
+//	  return value, nil
+//	}
 //
-//     var config Config
-//     ProcessWith(&config, OsLookuper(), resolveSecretFunc)
-//
+//	var config Config
+//	ProcessWith(&config, OsLookuper(), resolveSecretFunc)
 package envconfig
 
 import (
@@ -74,10 +73,10 @@ import (
 	"fmt"
 	"os"
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 )
 
 const (
@@ -94,8 +93,6 @@ const (
 	defaultDelimiter = ","
 	defaultSeparator = ":"
 )
-
-var envvarNameRe = regexp.MustCompile(`\A[a-zA-Z_][a-zA-Z0-9_]*\z`)
 
 // Error is a custom error type for errors returned by envconfig.
 type Error string
@@ -138,7 +135,7 @@ func (o *osLookuper) Lookup(key string) (string, bool) {
 	return os.LookupEnv(key)
 }
 
-// OsLookuper returns a lookuper that uses the environment (os.LookupEnv) to
+// OsLookuper returns a lookuper that uses the environment ([os.LookupEnv]) to
 // resolve values.
 func OsLookuper() Lookuper {
 	return new(osLookuper)
@@ -203,12 +200,11 @@ func MultiLookuper(lookupers ...Lookuper) Lookuper {
 // Decoder is an interface that custom types/fields can implement to control how
 // decoding takes place. For example:
 //
-//     type MyType string
+//	type MyType string
 //
-//     func (mt MyType) EnvDecode(val string) error {
-//         return "CUSTOM-"+val
-//     }
-//
+//	func (mt MyType) EnvDecode(val string) error {
+//	    return "CUSTOM-"+val
+//	}
 type Decoder interface {
 	EnvDecode(val string) error
 }
@@ -229,7 +225,7 @@ type options struct {
 	Required  bool
 }
 
-// Process processes the struct using the environment. See ProcessWith for a
+// Process processes the struct using the environment. See [ProcessWith] for a
 // more customizable version.
 func Process(ctx context.Context, i interface{}) error {
 	return ProcessWith(ctx, i, OsLookuper())
@@ -239,6 +235,28 @@ func Process(ctx context.Context, i interface{}) error {
 // package-level documentation for specific examples and behaviors.
 func ProcessWith(ctx context.Context, i interface{}, l Lookuper, fns ...MutatorFunc) error {
 	return processWith(ctx, i, l, false, fns...)
+}
+
+// ExtractDefaults is a helper that returns a fully-populated struct with the
+// default values resolved. This is helpful when you want to return a constant
+// "default" configuration that is not affected by the user's environment.
+//
+//	type Config struct {
+//	  Port string `env:"PORT,default=8080"`
+//	}
+//
+//	func DefaultConfig() *Config {
+//	  var cfg Config
+//	  if err := envconfig.ExtractDefaults(ctx, &cfg); err != nil {
+//	    panic("failed to extract default config: %s" + err.Error())
+//	  }
+//	  return &cfg
+//	}
+//
+// This is effectively the same as calling [ProcessWith] with an empty
+// [MapLookuper].
+func ExtractDefaults(ctx context.Context, i interface{}, fns ...MutatorFunc) error {
+	return processWith(ctx, i, MapLookuper(nil), false, fns...)
 }
 
 // processWith is a helper that captures whether the parent wanted
@@ -283,26 +301,32 @@ func processWith(ctx context.Context, i interface{}, l Lookuper, parentNoInit bo
 		}
 
 		// NoInit is only permitted on pointers.
-		if opts.NoInit && ef.Kind() != reflect.Ptr {
+		if opts.NoInit &&
+			ef.Kind() != reflect.Ptr &&
+			ef.Kind() != reflect.Slice &&
+			ef.Kind() != reflect.Map &&
+			ef.Kind() != reflect.UnsafePointer {
 			return fmt.Errorf("%s: %w", tf.Name, ErrNoInitNotPtr)
 		}
+		shouldNotInit := opts.NoInit || parentNoInit
 
 		isNilStructPtr := false
 		setNilStruct := func(v reflect.Value) {
 			origin := e.Field(i)
 			if isNilStructPtr {
 				empty := reflect.New(origin.Type().Elem()).Interface()
+
 				// If a struct (after traversal) equals to the empty value, it means
 				// nothing was changed in any sub-fields. With the noinit opt, we skip
-				// setting the empty value to the original struct pointer (aka. keep it
-				// nil).
-				if !reflect.DeepEqual(v.Interface(), empty) || (!opts.NoInit && !parentNoInit) {
+				// setting the empty value to the original struct pointer (keep it nil).
+				if !reflect.DeepEqual(v.Interface(), empty) || !shouldNotInit {
 					origin.Set(v)
 				}
 			}
 		}
 
 		// Initialize pointer structs.
+		pointerWasSet := false
 		for ef.Kind() == reflect.Ptr {
 			if ef.IsNil() {
 				if ef.Type().Elem().Kind() != reflect.Struct {
@@ -314,8 +338,8 @@ func processWith(ctx context.Context, i interface{}, l Lookuper, parentNoInit bo
 				isNilStructPtr = true
 				// Use an empty struct of the type so we can traverse.
 				ef = reflect.New(ef.Type().Elem()).Elem()
-
 			} else {
+				pointerWasSet = true
 				ef = ef.Elem()
 			}
 		}
@@ -330,20 +354,18 @@ func processWith(ctx context.Context, i interface{}, l Lookuper, parentNoInit bo
 			// Lookup the value, ignoring an error if the key isn't defined. This is
 			// required for nested structs that don't declare their own `env` keys,
 			// but have internal fields with an `env` defined.
-			val, found, usedDefault, err := lookup(key, opts, l)
+			val, _, _, err := lookup(key, opts, l)
 			if err != nil && !errors.Is(err, ErrMissingKey) {
 				return fmt.Errorf("%s: %w", tf.Name, err)
 			}
 
-			if found || usedDefault {
-				if ok, err := processAsDecoder(val, ef); ok {
-					if err != nil {
-						return err
-					}
-
-					setNilStruct(ef)
-					continue
+			if ok, err := processAsDecoder(val, ef); ok {
+				if err != nil {
+					return err
 				}
+
+				setNilStruct(ef)
+				continue
 			}
 
 			plu := l
@@ -351,7 +373,7 @@ func processWith(ctx context.Context, i interface{}, l Lookuper, parentNoInit bo
 				plu = PrefixLookuper(opts.Prefix, l)
 			}
 
-			if err := processWith(ctx, ef.Interface(), plu, opts.NoInit, fns...); err != nil {
+			if err := processWith(ctx, ef.Interface(), plu, shouldNotInit, fns...); err != nil {
 				return fmt.Errorf("%s: %w", tf.Name, err)
 			}
 
@@ -372,7 +394,7 @@ func processWith(ctx context.Context, i interface{}, l Lookuper, parentNoInit bo
 
 		// The field already has a non-zero value and overwrite is false, do not
 		// overwrite.
-		if !ef.IsZero() && !opts.Overwrite {
+		if (pointerWasSet || !ef.IsZero()) && !opts.Overwrite {
 			continue
 		}
 
@@ -384,7 +406,7 @@ func processWith(ctx context.Context, i interface{}, l Lookuper, parentNoInit bo
 		// If the field already has a non-zero value and there was no value directly
 		// specified, do not overwrite the existing field. We only want to overwrite
 		// when the envvar was provided directly.
-		if !ef.IsZero() && !found {
+		if (pointerWasSet || !ef.IsZero()) && !found {
 			continue
 		}
 
@@ -427,7 +449,7 @@ func keyAndOpts(tag string) (string, *options, error) {
 	parts := strings.Split(tag, ",")
 	key, tagOpts := strings.TrimSpace(parts[0]), parts[1:]
 
-	if key != "" && !envvarNameRe.MatchString(key) {
+	if key != "" && !validateEnvName(key) {
 		return "", nil, fmt.Errorf("%q: %w ", key, ErrInvalidEnvvarName)
 	}
 
@@ -435,7 +457,7 @@ func keyAndOpts(tag string) (string, *options, error) {
 
 LOOP:
 	for i, o := range tagOpts {
-		o = strings.TrimSpace(o)
+		o = strings.TrimLeftFunc(o, unicode.IsSpace)
 		switch {
 		case o == optOverwrite:
 			opts.Overwrite = true
@@ -688,4 +710,35 @@ func processField(v string, ef reflect.Value, delimiter, separator string, noIni
 	}
 
 	return nil
+}
+
+// validateEnvName validates the given string conforms to being a valid
+// environment variable.
+//
+// Per IEEE Std 1003.1-2001 environment variables consist solely of uppercase
+// letters, digits, and _, and do not begin with a digit.
+func validateEnvName(s string) bool {
+	if s == "" {
+		return false
+	}
+
+	for i, r := range s {
+		if (i == 0 && !isLetter(r)) || (!isLetter(r) && !isNumber(r) && r != '_') {
+			return false
+		}
+	}
+
+	return true
+}
+
+// isLetter returns true if the given rune is a letter between a-z,A-Z. This is
+// different than unicode.IsLetter which includes all L character cases.
+func isLetter(r rune) bool {
+	return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z')
+}
+
+// isNumber returns true if the given run is a number between 0-9. This is
+// different than unicode.IsNumber in that it only allows 0-9.
+func isNumber(r rune) bool {
+	return r >= '0' && r <= '9'
 }

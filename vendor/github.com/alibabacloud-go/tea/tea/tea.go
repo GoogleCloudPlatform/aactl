@@ -69,12 +69,14 @@ type Response struct {
 
 // SDKError struct is used save error code and message
 type SDKError struct {
-	Code       *string
-	StatusCode *int
-	Message    *string
-	Data       *string
-	Stack      *string
-	errMsg     *string
+	Code               *string
+	StatusCode         *int
+	Message            *string
+	Data               *string
+	Stack              *string
+	errMsg             *string
+	Description        *string
+	AccessDeniedDetail map[string]interface{}
 }
 
 // RuntimeObject is used for converting http configuration
@@ -181,6 +183,20 @@ func NewSDKError(obj map[string]interface{}) *SDKError {
 	if obj["message"] != nil {
 		err.Message = String(obj["message"].(string))
 	}
+	if obj["description"] != nil {
+		err.Description = String(obj["description"].(string))
+	}
+	if detail := obj["accessDeniedDetail"]; detail != nil {
+		r := reflect.ValueOf(detail)
+		if r.Kind().String() == "map" {
+			res := make(map[string]interface{})
+			tmp := r.MapKeys()
+			for _, key := range tmp {
+				res[key.String()] = r.MapIndex(key).Interface()
+			}
+			err.AccessDeniedDetail = res
+		}
+	}
 	if data := obj["data"]; data != nil {
 		r := reflect.ValueOf(data)
 		if r.Kind().String() == "map" {
@@ -197,6 +213,8 @@ func NewSDKError(obj map[string]interface{}) *SDKError {
 					if err_ == nil {
 						err.StatusCode = Int(code)
 					}
+				} else if code, ok := statusCode.(*int); ok {
+					err.StatusCode = code
 				}
 			}
 		}
