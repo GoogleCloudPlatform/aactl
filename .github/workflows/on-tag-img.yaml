@@ -90,7 +90,7 @@ jobs:
       go_version: ${{ needs.conf.outputs.go_version }}
       image_name: action
       image_repo: ${{ needs.conf.outputs.registry_uri }}
-      docker_file: Dockerfile # TODO: Change to cmd/action/Dockerfile when ready
+      docker_file: cmd/action/Dockerfile
 
   image_builder:
     needs:
@@ -108,7 +108,7 @@ jobs:
       go_version: ${{ needs.conf.outputs.go_version }}
       image_name: builder
       image_repo: ${{ needs.conf.outputs.registry_uri }}
-      docker_file: cmd/builder/Dockerfile
+      docker_file: cmd/aactl/Dockerfile
 
   sign_action:
     needs:

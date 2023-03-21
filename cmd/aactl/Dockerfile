@@ -12,26 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:buster AS build-env
+FROM golang@sha256:57dbdd5c8fe24e357b15a4ed045b0b1607a99a1465b5101304ea39e11547be27 AS builder
 WORKDIR /src/
 COPY . /src/
 ARG VERSION
 ARG COMMIT
 ARG DATE
-ENV VERSION ${VERSION}
-ENV COMMIT ${COMMIT}
-ENV DATE ${DATE}
-RUN CGO_ENABLED=0 go build -trimpath -ldflags="\
+ENV VERSION=${VERSION}
+ENV COMMIT=${COMMIT}
+ENV DATE=${DATE}
+RUN CGO_ENABLED=0 go build -a -trimpath -ldflags="\
     -w -s -X main.version=$VERSION \
 	-w -s -X main.commit=$COMMIT \
 	-w -s -X main.date=$DATE \
 	-extldflags '-static'" \
-    -a -mod vendor -o aactl cmd/aactl/main.go
+    -mod vendor -o app cmd/aactl/main.go
 
-# The base image from chainguard seems to provide best balance of 
-# size and vulnerabilities:
-# - gogole/distroless:  13.3 MB, 9 vulnerabilities (all low)
-# - chainguard/static:   5.7 MB, 0 vulnerabilities
-FROM cgr.dev/chainguard/static:latest
-COPY --from=build-env /src/aactl /
-ENTRYPOINT ["/aactl"]
+FROM scratch
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=builder /src/app /app
+ENTRYPOINT ["/app"]

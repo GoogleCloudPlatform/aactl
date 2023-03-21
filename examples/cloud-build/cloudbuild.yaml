@@ -57,12 +57,10 @@ steps:
       curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
       grype --add-cpes-if-none -s AllLayers -o json --file report.json $(cat image-digest.txt)
 
-  # The Dockerfile used to generate this image is located in the aactl repo.
-  # https://github.com/GoogleCloudPlatform/aactl/blob/main/Dockerfile
   - id: import
     waitFor:
     - scan
-    name: us-west1-docker.pkg.dev/cloudy-build/aactl/aactl
+    name: us-west1-docker.pkg.dev/cloudy-build/aactl/builder
     dir: examples/cloud-build
     args:
     - import
