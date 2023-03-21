@@ -21,7 +21,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 
-	"github.com/GoogleCloudPlatform/aactl/pkg/container"
+	c "github.com/GoogleCloudPlatform/aactl/pkg/container"
 	"github.com/GoogleCloudPlatform/aactl/pkg/dsse"
 )
 
@@ -32,7 +32,7 @@ type Envelope struct {
 }
 
 func GetVerifiedEnvelopes(ctx context.Context, resourceURI string) ([]*Envelope, error) {
-	atts, err := container.VerifyAndGetAttestations(ctx, resourceURI)
+	atts, err := c.VerifyAndGetAttestations(ctx, resourceURI)
 	if err != nil {
 		return nil, errors.Wrap(err, "error getting verified envelopes")
 	}
