@@ -65,10 +65,6 @@ jobs:
       uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70  # v3.1.1
       with:
         flags: unittests  # optional
-    - name: Upload Report
-      uses: github/codeql-action/upload-sarif@168b99b3c22180941ae7dbdd5f5c9678ede476ba  # v2.11.6
-      with:
-        sarif_file: 'trivy-results.sarif'
 
   lint:
     runs-on: ubuntu-latest
@@ -153,9 +149,6 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f  # v3.4.0
-    - name: Tidy Modules
-      run: |
-        make tidy
     - name: Scan Repo
       uses: aquasecurity/trivy-action@1f0aa582c8c8f5f7639610d6d38baddfea4fdcee  # master
       with:
@@ -166,3 +159,7 @@ jobs:
         output: 'trivy-results.sarif'
         severity: ${{ inputs.scan-severity }}
         exit-code: '1'
+    - name: Upload Report
+      uses: github/codeql-action/upload-sarif@168b99b3c22180941ae7dbdd5f5c9678ede476ba  # v2.11.6
+      with:
+        sarif_file: 'trivy-results.sarif'
