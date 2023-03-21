@@ -32,7 +32,7 @@ Once you have the vulnerability file, importing that file into AA using `aactl`:
 aactl vulnerability --project $project \
                     --source $image \
                     --file report.json \
-                    --format snyk
+                    --format trivy
 ```
 
 > The $image variable in the above example is the fully qualified URI of the image including its digest (e.g. `us-docker.pkg.dev/project/repo/image@sha256:397d453...`).
@@ -46,7 +46,9 @@ gcloud artifacts docker images list $repo \
   --occurrence-filter 'kind="VULNERABILITY" AND noteProjectId="$project" AND resource_url="$image" AND noteId="CVE-2005-2541"'
 ```
 
-> You can also navigate to Artifact Registry to view the vulnerabilities there. 
+You can also navigate to Artifact Registry to view the vulnerabilities there. 
+
+![](examples/images/ar.png)
 
 ### Attestation
 
@@ -57,6 +59,20 @@ aactl attestation --project $project --source $image
 ```
 
 > The $image variable in the above example is the fully qualified URI of the image including its digest (e.g. `us-docker.pkg.dev/project/repo/image@sha256:397d453...`).
+
+The imported data can be accessed using `gcloud`:
+
+```shell
+gcloud artifacts docker images describe $image --show-provenance --format json
+```
+
+The resulting JSON will look something like this: 
+
+![](examples/images/slsa.png)
+
+The data along with the SLSA level can also be viewed in Software Delivery Shield side panel:
+
+![](examples/images/panel.png)
 
 ## Contributing
 

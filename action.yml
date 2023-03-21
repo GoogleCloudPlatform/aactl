@@ -22,7 +22,7 @@ inputs:
   project:
     description: GCP Project ID'
     required: true
-  type: 
+  type:
     description: 'Type of data to import'
     required: true
   digest:

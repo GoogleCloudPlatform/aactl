@@ -1,6 +1,6 @@
 RELEASE_VERSION :=$(shell cat .version)
 COMMIT          :=$(shell git rev-parse HEAD)
-YAML_FILES      :=$(shell find . -type f -regex ".*yaml" -print)
+YAML_FILES      :=$(shell find . -type f -regex ".*y*ml" -print)
 CURRENT_DATE	:=$(shell date '+%Y-%m-%dT%H:%M:%SZ')
 
 ## Variable assertions
