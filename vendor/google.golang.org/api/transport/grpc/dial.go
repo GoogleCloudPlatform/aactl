@@ -21,6 +21,7 @@ import (
 	"golang.org/x/oauth2"
 	"google.golang.org/api/internal"
 	"google.golang.org/api/option"
+	"google.golang.org/api/transport/internal/dca"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	grpcgoogle "google.golang.org/grpc/credentials/google"
@@ -122,7 +123,7 @@ func dial(ctx context.Context, insecure bool, o *internal.DialSettings) (*grpc.C
 	if o.GRPCConn != nil {
 		return o.GRPCConn, nil
 	}
-	clientCertSource, endpoint, err := internal.GetClientCertificateSourceAndEndpoint(o)
+	clientCertSource, endpoint, err := dca.GetClientCertificateSourceAndEndpoint(o)
 	if err != nil {
 		return nil, err
 	}
@@ -154,10 +155,14 @@ func dial(ctx context.Context, insecure bool, o *internal.DialSettings) (*grpc.C
 			return nil, err
 		}
 
+		if o.QuotaProject == "" {
+			o.QuotaProject = internal.QuotaProjectFromCreds(creds)
+		}
+
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(grpcTokenSource{
 				TokenSource:   oauth.TokenSource{creds.TokenSource},
-				quotaProject:  internal.GetQuotaProject(creds, o.QuotaProject),
+				quotaProject:  o.QuotaProject,
 				requestReason: o.RequestReason,
 			}),
 		)
