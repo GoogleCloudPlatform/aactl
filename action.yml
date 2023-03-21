@@ -37,3 +37,9 @@ outputs:
 runs:
   using: docker
   image: docker://us-west1-docker.pkg.dev/cloudy-build/aactl/action:latest
+  args:
+    - import
+    - --project=${{ inputs.project }}
+    - --source=${{ inputs.digest }}
+    - --file=${{ inputs.file }}
+    - --format=${{ inputs.format }}

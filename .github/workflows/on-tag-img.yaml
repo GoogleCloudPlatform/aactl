@@ -49,6 +49,7 @@ jobs:
       registry_uri: ${{ steps.conf.outputs.registry_uri }}
       service_account: ${{ steps.conf.outputs.service_account }}
       project_id: ${{ steps.conf.outputs.project_id }}
+      image_name: ${{ steps.conf.outputs.image_name }}
     steps:
 
     - name: Export Config
@@ -62,6 +63,7 @@ jobs:
         echo "registry_uri=${{ env.REG_URI }}" >> $GITHUB_OUTPUT
         echo "service_account=${{ env.SA_EMAIL }}" >> $GITHUB_OUTPUT
         echo "project_id=${{ env.PROJECT_ID }}" >> $GITHUB_OUTPUT
+        echo "image_name=${{ env.IMG_NAME }}" >> $GITHUB_OUTPUT
 
   test:
     needs:
@@ -74,7 +76,7 @@ jobs:
       go-version: ${{ needs.conf.outputs.go_version }}
       scan-severity: ${{ needs.conf.outputs.err_on_vulnerability_sev }}
 
-  image_action:
+  image:
     needs:
     - conf
     - test
@@ -88,32 +90,14 @@ jobs:
       auth_provider: ${{ needs.conf.outputs.provider_id }}
       auth_user: ${{ needs.conf.outputs.service_account }}
       go_version: ${{ needs.conf.outputs.go_version }}
-      image_name: action
-      image_repo: ${{ needs.conf.outputs.registry_uri }}
-      docker_file: cmd/action/Dockerfile
-
-  image_builder:
-    needs:
-    - conf
-    - test
-    permissions:
-      contents: read
-      actions: read
-      id-token: write
-      packages: write
-    uses: ./.github/workflows/build.yaml
-    with:
-      auth_provider: ${{ needs.conf.outputs.provider_id }}
-      auth_user: ${{ needs.conf.outputs.service_account }}
-      go_version: ${{ needs.conf.outputs.go_version }}
-      image_name: builder
+      image_name: ${{ needs.conf.outputs.image_name }}
       image_repo: ${{ needs.conf.outputs.registry_uri }}
       docker_file: cmd/aactl/Dockerfile
 
-  sign_action:
+  sign:
     needs:
     - conf
-    - image_action
+    - image
     permissions:
       contents: read
       actions: read
@@ -126,27 +110,10 @@ jobs:
       image_digest: ${{ needs.image_action.outputs.digest }}
       scan_severity: ${{ needs.conf.outputs.err_on_vulnerability_sev }}
 
-  sign_builder:
+  provenance:
     needs:
     - conf
-    - image_builder
-    - image_builder
-    permissions:
-      contents: read
-      actions: read
-      id-token: write
-    uses: ./.github/workflows/sign.yaml
-    with:
-      auth_provider: ${{ needs.conf.outputs.provider_id }}
-      auth_user: ${{ needs.conf.outputs.service_account }}
-      cosign_version: ${{ needs.conf.outputs.cosign_version }}
-      image_digest: ${{ needs.image_builder.outputs.digest }}
-      scan_severity: ${{ needs.conf.outputs.err_on_vulnerability_sev }}
-
-  provenance_action:
-    needs:
-    - conf
-    - image_action
+    - image
     permissions:
       contents: read
       actions: read
@@ -156,30 +123,13 @@ jobs:
     with:
       auth_provider: ${{ needs.conf.outputs.provider_id }}
       auth_user: ${{ needs.conf.outputs.service_account }}
-      image_digest: ${{ needs.image_action.outputs.digest }}
-
-  provenance_builder:
-    needs:
-    - conf
-    - image_builder
-    - image_builder
-    permissions:
-      contents: read
-      actions: read
-      id-token: write
-      packages: write
-    uses: ./.github/workflows/slsa.yaml
-    with:
-      auth_provider: ${{ needs.conf.outputs.provider_id }}
-      auth_user: ${{ needs.conf.outputs.service_account }}
-      image_digest: ${{ needs.image_builder.outputs.digest }}
+      image_digest: ${{ needs.image.outputs.digest }}
 
   # Implements import using the newly built image from the 'image' job.
   import:
     needs:
     - conf
-    - image_action
-    - image_action
+    - image
     permissions:
       contents: read
       actions: read
@@ -188,5 +138,5 @@ jobs:
     with:
       auth_provider: ${{ needs.conf.outputs.provider_id }}
       auth_user: ${{ needs.conf.outputs.service_account }}
-      image_digest: ${{ needs.image_action.outputs.digest }}
       target_project: ${{ needs.conf.outputs.project_id }}
+      image_digest: ${{ needs.image.outputs.digest }}
