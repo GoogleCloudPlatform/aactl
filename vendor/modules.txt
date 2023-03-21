@@ -14,10 +14,6 @@ cloud.google.com/go/grafeas/apiv1
 # cloud.google.com/go/iam v0.13.0
 ## explicit; go 1.19
 cloud.google.com/go/iam/apiv1/iampb
-# filippo.io/edwards25519 v1.0.0
-## explicit; go 1.17
-filippo.io/edwards25519
-filippo.io/edwards25519/field
 # github.com/AliyunContainerService/ack-ram-tool/pkg/credentials/alibabacloudsdkgo/helper v0.2.0
 ## explicit; go 1.17
 github.com/AliyunContainerService/ack-ram-tool/pkg/credentials/alibabacloudsdkgo/helper
@@ -53,26 +49,6 @@ github.com/Azure/go-autorest/tracing
 # github.com/Jeffail/gabs/v2 v2.7.0
 ## explicit; go 1.16
 github.com/Jeffail/gabs/v2
-# github.com/ProtonMail/go-crypto v0.0.0-20230320150741-8451524ecd7e
-## explicit; go 1.13
-github.com/ProtonMail/go-crypto/bitcurves
-github.com/ProtonMail/go-crypto/brainpool
-github.com/ProtonMail/go-crypto/eax
-github.com/ProtonMail/go-crypto/internal/byteutil
-github.com/ProtonMail/go-crypto/ocb
-github.com/ProtonMail/go-crypto/openpgp
-github.com/ProtonMail/go-crypto/openpgp/aes/keywrap
-github.com/ProtonMail/go-crypto/openpgp/armor
-github.com/ProtonMail/go-crypto/openpgp/ecdh
-github.com/ProtonMail/go-crypto/openpgp/ecdsa
-github.com/ProtonMail/go-crypto/openpgp/eddsa
-github.com/ProtonMail/go-crypto/openpgp/elgamal
-github.com/ProtonMail/go-crypto/openpgp/errors
-github.com/ProtonMail/go-crypto/openpgp/internal/algorithm
-github.com/ProtonMail/go-crypto/openpgp/internal/ecc
-github.com/ProtonMail/go-crypto/openpgp/internal/encoding
-github.com/ProtonMail/go-crypto/openpgp/packet
-github.com/ProtonMail/go-crypto/openpgp/s2k
 # github.com/ThalesIgnite/crypto11 v1.2.5
 ## explicit; go 1.13
 github.com/ThalesIgnite/crypto11
@@ -228,20 +204,6 @@ github.com/chrismellard/docker-credential-acr-env/pkg/token
 # github.com/clbanning/mxj/v2 v2.5.7
 ## explicit; go 1.15
 github.com/clbanning/mxj/v2
-# github.com/cloudflare/circl v1.3.2
-## explicit; go 1.17
-github.com/cloudflare/circl/dh/x25519
-github.com/cloudflare/circl/dh/x448
-github.com/cloudflare/circl/ecc/goldilocks
-github.com/cloudflare/circl/internal/conv
-github.com/cloudflare/circl/internal/sha3
-github.com/cloudflare/circl/math
-github.com/cloudflare/circl/math/fp25519
-github.com/cloudflare/circl/math/fp448
-github.com/cloudflare/circl/math/mlsbset
-github.com/cloudflare/circl/sign
-github.com/cloudflare/circl/sign/ed25519
-github.com/cloudflare/circl/sign/ed448
 # github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be
 ## explicit
 github.com/common-nighthawk/go-figure
@@ -261,12 +223,6 @@ github.com/cyberphone/json-canonicalization/go/src/webpki.org/jsoncanonicalizer
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
-# github.com/digitorus/pkcs7 v0.0.0-20230220124406-51331ccfc40f
-## explicit; go 1.13
-github.com/digitorus/pkcs7
-# github.com/digitorus/timestamp v0.0.0-20230220124323-d542479a2425
-## explicit; go 1.16
-github.com/digitorus/timestamp
 # github.com/dimchansky/utfbom v1.1.1
 ## explicit
 github.com/dimchansky/utfbom
@@ -438,13 +394,12 @@ github.com/google/go-containerregistry/pkg/v1/mutate
 github.com/google/go-containerregistry/pkg/v1/partial
 github.com/google/go-containerregistry/pkg/v1/remote
 github.com/google/go-containerregistry/pkg/v1/remote/transport
-github.com/google/go-containerregistry/pkg/v1/static
 github.com/google/go-containerregistry/pkg/v1/stream
 github.com/google/go-containerregistry/pkg/v1/tarball
 github.com/google/go-containerregistry/pkg/v1/types
-# github.com/google/go-github/v50 v50.2.0
+# github.com/google/go-github/v45 v45.2.0
 ## explicit; go 1.17
-github.com/google/go-github/v50/github
+github.com/google/go-github/v45/github
 # github.com/google/go-querystring v1.1.0
 ## explicit; go 1.10
 github.com/google/go-querystring/query
@@ -617,37 +572,34 @@ github.com/segmentio/ksuid
 # github.com/shibumi/go-pathspec v1.3.0
 ## explicit; go 1.17
 github.com/shibumi/go-pathspec
-# github.com/sigstore/cosign/v2 v2.0.0
-## explicit; go 1.19
-github.com/sigstore/cosign/v2/cmd/cosign/cli/fulcio
-github.com/sigstore/cosign/v2/cmd/cosign/cli/options
-github.com/sigstore/cosign/v2/cmd/cosign/cli/sign/privacy
-github.com/sigstore/cosign/v2/internal/pkg/cosign/fulcio/fulcioroots
-github.com/sigstore/cosign/v2/internal/pkg/oci/remote
-github.com/sigstore/cosign/v2/internal/ui
-github.com/sigstore/cosign/v2/pkg/blob
-github.com/sigstore/cosign/v2/pkg/cosign
-github.com/sigstore/cosign/v2/pkg/cosign/attestation
-github.com/sigstore/cosign/v2/pkg/cosign/bundle
-github.com/sigstore/cosign/v2/pkg/cosign/env
-github.com/sigstore/cosign/v2/pkg/cosign/fulcioverifier/ctutil
-github.com/sigstore/cosign/v2/pkg/cosign/git
-github.com/sigstore/cosign/v2/pkg/cosign/git/github
-github.com/sigstore/cosign/v2/pkg/cosign/git/gitlab
-github.com/sigstore/cosign/v2/pkg/cosign/kubernetes
-github.com/sigstore/cosign/v2/pkg/cosign/pkcs11key
-github.com/sigstore/cosign/v2/pkg/cosign/remote
-github.com/sigstore/cosign/v2/pkg/oci
-github.com/sigstore/cosign/v2/pkg/oci/empty
-github.com/sigstore/cosign/v2/pkg/oci/internal/signature
-github.com/sigstore/cosign/v2/pkg/oci/layout
-github.com/sigstore/cosign/v2/pkg/oci/mutate
-github.com/sigstore/cosign/v2/pkg/oci/remote
-github.com/sigstore/cosign/v2/pkg/oci/signed
-github.com/sigstore/cosign/v2/pkg/oci/static
-github.com/sigstore/cosign/v2/pkg/providers
-github.com/sigstore/cosign/v2/pkg/signature
-github.com/sigstore/cosign/v2/pkg/types
+# github.com/sigstore/cosign v1.13.1
+## explicit; go 1.18
+github.com/sigstore/cosign/cmd/cosign/cli/fulcio
+github.com/sigstore/cosign/cmd/cosign/cli/fulcio/fulcioverifier/ctl
+github.com/sigstore/cosign/cmd/cosign/cli/fulcio/fulcioverifier/ctutil
+github.com/sigstore/cosign/cmd/cosign/cli/options
+github.com/sigstore/cosign/internal/pkg/cosign/fulcio/fulcioroots
+github.com/sigstore/cosign/pkg/blob
+github.com/sigstore/cosign/pkg/cosign
+github.com/sigstore/cosign/pkg/cosign/attestation
+github.com/sigstore/cosign/pkg/cosign/bundle
+github.com/sigstore/cosign/pkg/cosign/git
+github.com/sigstore/cosign/pkg/cosign/git/github
+github.com/sigstore/cosign/pkg/cosign/git/gitlab
+github.com/sigstore/cosign/pkg/cosign/kubernetes
+github.com/sigstore/cosign/pkg/cosign/pkcs11key
+github.com/sigstore/cosign/pkg/cosign/remote
+github.com/sigstore/cosign/pkg/oci
+github.com/sigstore/cosign/pkg/oci/empty
+github.com/sigstore/cosign/pkg/oci/internal/signature
+github.com/sigstore/cosign/pkg/oci/layout
+github.com/sigstore/cosign/pkg/oci/mutate
+github.com/sigstore/cosign/pkg/oci/remote
+github.com/sigstore/cosign/pkg/oci/signed
+github.com/sigstore/cosign/pkg/oci/static
+github.com/sigstore/cosign/pkg/providers
+github.com/sigstore/cosign/pkg/signature
+github.com/sigstore/cosign/pkg/types
 # github.com/sigstore/fulcio v1.1.0
 ## explicit; go 1.20
 github.com/sigstore/fulcio/pkg/api
@@ -684,9 +636,6 @@ github.com/sigstore/sigstore/pkg/signature/kms
 github.com/sigstore/sigstore/pkg/signature/options
 github.com/sigstore/sigstore/pkg/signature/payload
 github.com/sigstore/sigstore/pkg/tuf
-# github.com/sigstore/timestamp-authority v0.2.1
-## explicit; go 1.19
-github.com/sigstore/timestamp-authority/pkg/verification
 # github.com/sirupsen/logrus v1.9.0
 ## explicit; go 1.13
 github.com/sirupsen/logrus
@@ -830,17 +779,6 @@ go.opentelemetry.io/otel/semconv/v1.12.0
 # go.opentelemetry.io/otel/trace v1.14.0
 ## explicit; go 1.18
 go.opentelemetry.io/otel/trace
-# go.step.sm/crypto v0.27.0
-## explicit; go 1.18
-go.step.sm/crypto/fingerprint
-go.step.sm/crypto/internal/bcrypt_pbkdf
-go.step.sm/crypto/internal/emoji
-go.step.sm/crypto/internal/utils
-go.step.sm/crypto/jose
-go.step.sm/crypto/keyutil
-go.step.sm/crypto/pemutil
-go.step.sm/crypto/randutil
-go.step.sm/crypto/x25519
 # go.uber.org/atomic v1.10.0
 ## explicit; go 1.18
 go.uber.org/atomic
@@ -858,7 +796,6 @@ go.uber.org/zap/internal/exit
 go.uber.org/zap/zapcore
 # golang.org/x/crypto v0.7.0
 ## explicit; go 1.17
-golang.org/x/crypto/argon2
 golang.org/x/crypto/blake2b
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/cast5
@@ -868,7 +805,6 @@ golang.org/x/crypto/cryptobyte/asn1
 golang.org/x/crypto/curve25519
 golang.org/x/crypto/curve25519/internal/field
 golang.org/x/crypto/ed25519
-golang.org/x/crypto/hkdf
 golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
 golang.org/x/crypto/nacl/box
@@ -1086,21 +1022,12 @@ gopkg.in/inf.v0
 # gopkg.in/ini.v1 v1.67.0
 ## explicit
 gopkg.in/ini.v1
-# gopkg.in/square/go-jose.v2 v2.6.0
-## explicit
-gopkg.in/square/go-jose.v2
-gopkg.in/square/go-jose.v2/cipher
-gopkg.in/square/go-jose.v2/cryptosigner
-gopkg.in/square/go-jose.v2/json
-gopkg.in/square/go-jose.v2/jwt
 # gopkg.in/yaml.v2 v2.4.0
 ## explicit; go 1.15
 gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# gotest.tools/v3 v3.1.0
-## explicit; go 1.11
 # k8s.io/api v0.26.3
 ## explicit; go 1.19
 k8s.io/api/admissionregistration/v1
