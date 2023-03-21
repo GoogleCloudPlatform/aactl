@@ -37,11 +37,6 @@ on:
         description: 'OIDC user ID'
         required: true
         type: string
-      go_version:
-        description: 'Go version to use'
-        required: false
-        type: string
-        default: '1.20.1'
     outputs:
       digest:
         value: ${{ jobs.build.outputs.digest }}

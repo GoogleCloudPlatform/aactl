@@ -60,7 +60,7 @@ steps:
   - id: import
     waitFor:
     - scan
-    name: us-west1-docker.pkg.dev/cloudy-build/aactl/builder
+    name: us-west1-docker.pkg.dev/cloudy-build/aactl/aactl
     dir: examples/cloud-build
     args:
     - import
