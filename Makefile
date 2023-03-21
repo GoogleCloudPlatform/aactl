@@ -90,8 +90,8 @@ tagless: ## Delete the current release tag
 
 .PHONY: rebase
 rebase: ## Rebase the current branch from main
-git fetch
-git rebase origin/main
+	git fetch
+	git rebase origin/main
 
 .PHONY: clean
 clean: ## Cleans bin and temp directories
