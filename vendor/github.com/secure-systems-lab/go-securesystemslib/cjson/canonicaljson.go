@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"regexp"
 	"sort"
-	"strings"
 )
 
 /*
@@ -18,12 +18,8 @@ escaping backslashes ("\") and double quotes (") and wrapping the resulting
 string in double quotes (").
 */
 func encodeCanonicalString(s string) string {
-	// Escape backslashes
-	s = strings.ReplaceAll(s, "\\", "\\\\")
-	// Escape double quotes
-	s = strings.ReplaceAll(s, "\"", "\\\"")
-	// Wrap with double quotes
-	return fmt.Sprintf("\"%s\"", s)
+	re := regexp.MustCompile(`([\"\\])`)
+	return fmt.Sprintf("\"%s\"", re.ReplaceAllString(s, "\\$1"))
 }
 
 /*
@@ -32,7 +28,16 @@ object according to the OLPC canonical JSON specification (see
 http://wiki.laptop.org/go/Canonical_JSON) and write it to the passed
 *bytes.Buffer.  If canonicalization fails it returns an error.
 */
-func encodeCanonical(obj interface{}, result *strings.Builder) (err error) {
+func encodeCanonical(obj interface{}, result *bytes.Buffer) (err error) {
+	// Since this function is called recursively, we use panic if an error occurs
+	// and recover in a deferred function, which is always called before
+	// returning. There we set the error that is returned eventually.
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.New(r.(string))
+		}
+	}()
+
 	switch objAsserted := obj.(type) {
 	case string:
 		result.WriteString(encodeCanonicalString(objAsserted))
@@ -85,9 +90,10 @@ func encodeCanonical(obj interface{}, result *strings.Builder) (err error) {
 
 		// Canonicalize map
 		for i, key := range mapKeys {
-			if err := encodeCanonical(key, result); err != nil {
-				return err
-			}
+			// Note: `key` must be a `string` (see `case map[string]interface{}`) and
+			// canonicalization of strings cannot err out (see `case string`), thus
+			// no error handling is needed here.
+			encodeCanonical(key, result)
 
 			result.WriteString(":")
 			if err := encodeCanonical(objAsserted[key], result); err != nil {
@@ -114,16 +120,7 @@ slice.  It uses the OLPC canonical JSON specification (see
 http://wiki.laptop.org/go/Canonical_JSON).  If canonicalization fails the byte
 slice is nil and the second return value contains the error.
 */
-func EncodeCanonical(obj interface{}) (out []byte, err error) {
-	// We use panic if an error occurs and recover in a deferred function,
-	// which is always called before returning.
-	// There we set the error that is returned eventually.
-	defer func() {
-		if r := recover(); r != nil {
-			err = errors.New(r.(string))
-		}
-	}()
-
+func EncodeCanonical(obj interface{}) ([]byte, error) {
 	// FIXME: Terrible hack to turn the passed struct into a map, converting
 	// the struct's variable names to the json key names defined in the struct
 	data, err := json.Marshal(obj)
@@ -139,13 +136,10 @@ func EncodeCanonical(obj interface{}) (out []byte, err error) {
 	}
 
 	// Create a buffer and write the canonicalized JSON bytes to it
-	var result strings.Builder
-	// Allocate output result buffer with the input size.
-	result.Grow(len(data))
-	// Recursively encode the jsonmap
+	var result bytes.Buffer
 	if err := encodeCanonical(jsonMap, &result); err != nil {
 		return nil, err
 	}
 
-	return []byte(result.String()), nil
+	return result.Bytes(), nil
 }

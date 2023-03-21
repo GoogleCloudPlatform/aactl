@@ -6,10 +6,10 @@ require (
 	cloud.google.com/go/containeranalysis v0.8.0
 	github.com/Jeffail/gabs/v2 v2.7.0
 	github.com/google/go-containerregistry v0.14.0
-	github.com/in-toto/in-toto-golang v0.7.0
+	github.com/in-toto/in-toto-golang v0.6.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.0
-	github.com/secure-systems-lab/go-securesystemslib v0.5.0
+	github.com/secure-systems-lab/go-securesystemslib v0.4.0
 	github.com/sigstore/cosign v1.13.1
 	github.com/stretchr/testify v1.8.2
 	github.com/urfave/cli/v2 v2.25.0
@@ -18,6 +18,12 @@ require (
 	google.golang.org/genproto v0.0.0-20230320184635-7606e756e683
 	google.golang.org/grpc v1.53.0
 	google.golang.org/protobuf v1.30.0
+)
+
+exclude (
+	github.com/in-toto/in-toto-golang v0.7.0
+	github.com/secure-systems-lab/go-securesystemslib v0.5.0
+	github.com/sigstore/sigstore v1.6.0
 )
 
 require (
@@ -145,7 +151,7 @@ require (
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
 	github.com/sigstore/fulcio v1.1.0 // indirect
 	github.com/sigstore/rekor v1.0.1 // indirect
-	github.com/sigstore/sigstore v1.6.0 // indirect
+	github.com/sigstore/sigstore v1.5.2 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966 // indirect
 	github.com/spf13/afero v1.9.5 // indirect

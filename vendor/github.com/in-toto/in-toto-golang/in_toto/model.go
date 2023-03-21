@@ -1,7 +1,6 @@
 package in_toto
 
 import (
-	"context"
 	"crypto/ecdsa"
 	"crypto/rsa"
 	"crypto/x509"
@@ -1060,15 +1059,15 @@ func NewDSSESigner(p ...dsse.SignVerifier) (*DSSESigner, error) {
 	}, nil
 }
 
-func (s *DSSESigner) SignPayload(ctx context.Context, body []byte) (*dsse.Envelope, error) {
-	return s.signer.SignPayload(ctx, PayloadType, body)
+func (s *DSSESigner) SignPayload(body []byte) (*dsse.Envelope, error) {
+	return s.signer.SignPayload(PayloadType, body)
 }
 
-func (s *DSSESigner) Verify(ctx context.Context, e *dsse.Envelope) error {
+func (s *DSSESigner) Verify(e *dsse.Envelope) error {
 	if e.PayloadType != PayloadType {
 		return ErrInvalidPayloadType
 	}
 
-	_, err := s.signer.Verify(ctx, e)
+	_, err := s.signer.Verify(e)
 	return err
 }

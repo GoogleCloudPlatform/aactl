@@ -18,7 +18,6 @@ package dsse
 
 import (
 	"bytes"
-	"context"
 	"crypto"
 	"errors"
 
@@ -34,12 +33,12 @@ type SignerAdapter struct {
 }
 
 // Sign implements `go-securesystemslib/dsse.Signer`
-func (a *SignerAdapter) Sign(ctx context.Context, data []byte) ([]byte, error) {
+func (a *SignerAdapter) Sign(data []byte) ([]byte, error) {
 	return a.SignatureSigner.SignMessage(bytes.NewReader(data), a.Opts...)
 }
 
 // Verify disabled `go-securesystemslib/dsse.Verifier`
-func (a *SignerAdapter) Verify(ctx context.Context, data, sig []byte) error {
+func (a *SignerAdapter) Verify(data, sig []byte) error {
 	return errors.New("Verify disabled")
 }
 
@@ -61,7 +60,7 @@ type VerifierAdapter struct {
 }
 
 // Verify implements `go-securesystemslib/dsse.Verifier`
-func (a *VerifierAdapter) Verify(ctx context.Context, data, sig []byte) error {
+func (a *VerifierAdapter) Verify(data, sig []byte) error {
 	return a.SignatureVerifier.VerifySignature(bytes.NewReader(sig), bytes.NewReader(data))
 }
 

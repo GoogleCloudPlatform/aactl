@@ -441,7 +441,7 @@ github.com/hashicorp/hcl/json/token
 # github.com/imdario/mergo v0.3.14
 ## explicit; go 1.13
 github.com/imdario/mergo
-# github.com/in-toto/in-toto-golang v0.7.0
+# github.com/in-toto/in-toto-golang v0.6.0
 ## explicit; go 1.17
 github.com/in-toto/in-toto-golang/in_toto
 github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common
@@ -562,7 +562,7 @@ github.com/russross/blackfriday/v2
 github.com/sassoftware/relic/lib/pkcs7
 github.com/sassoftware/relic/lib/x509tools
 github.com/sassoftware/relic/signers/sigerrors
-# github.com/secure-systems-lab/go-securesystemslib v0.5.0
+# github.com/secure-systems-lab/go-securesystemslib v0.4.0
 ## explicit; go 1.17
 github.com/secure-systems-lab/go-securesystemslib/cjson
 github.com/secure-systems-lab/go-securesystemslib/dsse
@@ -624,7 +624,7 @@ github.com/sigstore/rekor/pkg/types/hashedrekord
 github.com/sigstore/rekor/pkg/types/hashedrekord/v0.0.1
 github.com/sigstore/rekor/pkg/types/intoto
 github.com/sigstore/rekor/pkg/types/intoto/v0.0.1
-# github.com/sigstore/sigstore v1.6.0
+# github.com/sigstore/sigstore v1.5.2
 ## explicit; go 1.18
 github.com/sigstore/sigstore/pkg/cryptoutils
 github.com/sigstore/sigstore/pkg/fulcioroots

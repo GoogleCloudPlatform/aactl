@@ -176,7 +176,7 @@ github.com/aws/aws-sdk-go-v2/service/ecrpublic v1.15.5/go.mod h1:kRj+HsQhQbbvOWq
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.23/go.mod h1:9uPh+Hrz2Vn6oMnQYiUi/zbh3ovbnQk19YKINkQny44=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.24 h1:c5qGfdbCHav6viBwiyDns3OXqhqAbGjfIB4uVu2ayhk=
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.24/go.mod h1:HMA4FZG6fyib+NDo5bpIxX1EhYjrAOveZJY2YR0xrNE=
-github.com/aws/aws-sdk-go-v2/service/kms v1.20.5 h1:HKBjhFr7yVOYWTBmYmIHSHyLwmybF0ly7sPCBn/OiJk=
+github.com/aws/aws-sdk-go-v2/service/kms v1.20.4 h1:FOY3JSIwgItCdaeuLKjtijD8Enx6BHy5nSS/V6COOeA=
 github.com/aws/aws-sdk-go-v2/service/sso v1.12.4/go.mod h1:jtLIhd+V+lft6ktxpItycqHqiVXrPIRjWIsFIlzMriw=
 github.com/aws/aws-sdk-go-v2/service/sso v1.12.5 h1:bdKIX6SVF3nc3xJFw6Nf0igzS6Ff/louGq8Z6VP/3Hs=
 github.com/aws/aws-sdk-go-v2/service/sso v1.12.5/go.mod h1:vuWiaDB30M/QTC+lI3Wj6S/zb7tpUK2MSYgy3Guh2L0=
@@ -514,8 +514,8 @@ github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:
 github.com/ianlancetaylor/demangle v0.0.0-20200824232613-28f6c0f3b639/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/imdario/mergo v0.3.14 h1:fOqeC1+nCuuk6PKQdg9YmosXX7Y7mHX6R/0ZldI9iHo=
 github.com/imdario/mergo v0.3.14/go.mod h1:WBLT9ZmE3lPoWsEzCh9LPo3TiwVN+ZKEjmz+hD27ysY=
-github.com/in-toto/in-toto-golang v0.7.0 h1:sSTxj28v8vEx7d7KB7pWfS5bkR9qB+6Zuee0cwW5v94=
-github.com/in-toto/in-toto-golang v0.7.0/go.mod h1:uL5siwLtGflIjlgOPh5j+GBKulIy+UL+LVDpe5d1AeM=
+github.com/in-toto/in-toto-golang v0.6.0 h1:1s7cyzb5zGyzKPLgFsi4sC0o3EA24HLKlne8BrnOrSc=
+github.com/in-toto/in-toto-golang v0.6.0/go.mod h1:NaFLcsxtvZgbwQpyHwK8MlDXN9b+NuOMXqeIqxzfBoA=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/inconshreveable/mousetrap v1.0.1/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
@@ -675,8 +675,8 @@ github.com/sassoftware/go-rpmutils v0.1.1/go.mod h1:euhXULoBpvAxqrBHEyJS4Tsu3hHx
 github.com/sassoftware/relic v0.0.0-20210427151427-dfb082b79b74 h1:sUNzanSKA9z/h8xXl+ZJoxIYZL0Qx306MmxqRrvUgr0=
 github.com/sassoftware/relic v0.0.0-20210427151427-dfb082b79b74/go.mod h1:YlB8wFIZmFLZ1JllNBfSURzz52fBxbliNgYALk1UDmk=
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
-github.com/secure-systems-lab/go-securesystemslib v0.5.0 h1:oTiNu0QnulMQgN/hLK124wJD/r2f9ZhIUuKIeBsCBT8=
-github.com/secure-systems-lab/go-securesystemslib v0.5.0/go.mod h1:uoCqUC0Ap7jrBSEanxT+SdACYJTVplRXWLkGMuDjXqk=
+github.com/secure-systems-lab/go-securesystemslib v0.4.0 h1:b23VGrQhTA8cN2CbBw7/FulN9fTtqYUdS5+Oxzt+DUE=
+github.com/secure-systems-lab/go-securesystemslib v0.4.0/go.mod h1:FGBZgq2tXWICsxWQW1msNf49F0Pf2Op5Htayx335Qbs=
 github.com/segmentio/ksuid v1.0.4 h1:sBo2BdShXjmcugAMwjugoGUdUV0pcxY5mW4xKRn3v4c=
 github.com/segmentio/ksuid v1.0.4/go.mod h1:/XUiZBD3kVx5SmUOl55voK5yeAbBNNIed+2O73XgrPE=
 github.com/shibumi/go-pathspec v1.3.0 h1:QUyMZhFo0Md5B8zV8x2tesohbb5kfbpTi9rBnKh5dkI=
@@ -688,8 +688,8 @@ github.com/sigstore/fulcio v1.1.0 h1:mzzJ05Ccu8Y2inyioklNvc8MpzlGHxu8YqNeTm0dHfU
 github.com/sigstore/fulcio v1.1.0/go.mod h1:zv1ZQTXZbUwQdRwajlQksc34pRas+2aZYpIZoQBNev8=
 github.com/sigstore/rekor v1.0.1 h1:rcESXSNkAPRWFYZel9rarspdvneET60F2ngNkadi89c=
 github.com/sigstore/rekor v1.0.1/go.mod h1:ecTKdZWGWqE1pl3U1m1JebQJLU/hSjD9vYHOmHQ7w4g=
-github.com/sigstore/sigstore v1.6.0 h1:0fYHVoUlPU3WM8o3U1jT9SI2lqQE68XbG+qWncXaZC8=
-github.com/sigstore/sigstore v1.6.0/go.mod h1:+55pf6HZ15kf60c08W+GH95JQbAcnVyUBquQGSVdsto=
+github.com/sigstore/sigstore v1.5.2 h1:rvZSPJDH2ysoc8kjW9v4nv1UX3XwSA8y4x6Dk7hA0D4=
+github.com/sigstore/sigstore v1.5.2/go.mod h1:wxhp9KoaOpeb1VLKILruD283KJqPSqX+3TuBByVDZ6E=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMBDgk/93Q=

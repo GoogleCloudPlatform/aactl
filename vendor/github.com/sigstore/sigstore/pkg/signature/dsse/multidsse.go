@@ -16,7 +16,6 @@
 package dsse
 
 import (
-	"context"
 	"crypto"
 	"encoding/json"
 	"errors"
@@ -78,7 +77,7 @@ func (wL *wrappedMultiSigner) SignMessage(r io.Reader, opts ...signature.SignOpt
 		return nil, err
 	}
 
-	env, err := envSigner.SignPayload(context.Background(), wL.payloadType, p)
+	env, err := envSigner.SignPayload(wL.payloadType, p)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +143,7 @@ func (wL *wrappedMultiVerifier) VerifySignature(s, _ io.Reader, opts ...signatur
 		return err
 	}
 
-	_, err = envVerifier.Verify(context.Background(), &env)
+	_, err = envVerifier.Verify(&env)
 	return err
 }
 

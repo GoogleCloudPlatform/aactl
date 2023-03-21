@@ -5,7 +5,6 @@ https://github.com/secure-systems-lab/dsse
 package dsse
 
 import (
-	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -78,7 +77,7 @@ using the current algorithm, and the key used (if applicable).
 For an example see EcdsaSigner in sign_test.go.
 */
 type Signer interface {
-	Sign(ctx context.Context, data []byte) ([]byte, error)
+	Sign(data []byte) ([]byte, error)
 	KeyID() (string, error)
 }
 
@@ -144,7 +143,7 @@ Returned is an envelope as defined here:
 https://github.com/secure-systems-lab/dsse/blob/master/envelope.md
 One signature will be added for each Signer in the EnvelopeSigner.
 */
-func (es *EnvelopeSigner) SignPayload(ctx context.Context, payloadType string, body []byte) (*Envelope, error) {
+func (es *EnvelopeSigner) SignPayload(payloadType string, body []byte) (*Envelope, error) {
 	var e = Envelope{
 		Payload:     base64.StdEncoding.EncodeToString(body),
 		PayloadType: payloadType,
@@ -153,7 +152,7 @@ func (es *EnvelopeSigner) SignPayload(ctx context.Context, payloadType string, b
 	paeEnc := PAE(payloadType, body)
 
 	for _, signer := range es.providers {
-		sig, err := signer.Sign(ctx, paeEnc)
+		sig, err := signer.Sign(paeEnc)
 		if err != nil {
 			return nil, err
 		}
@@ -177,8 +176,8 @@ Any domain specific validation such as parsing the decoded body and
 validating the payload type is left out to the caller.
 Verify returns a list of accepted keys each including a keyid, public and signiture of the accepted provider keys.
 */
-func (es *EnvelopeSigner) Verify(ctx context.Context, e *Envelope) ([]AcceptedKey, error) {
-	return es.ev.Verify(ctx, e)
+func (es *EnvelopeSigner) Verify(e *Envelope) ([]AcceptedKey, error) {
+	return es.ev.Verify(e)
 }
 
 /*
