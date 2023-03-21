@@ -44,15 +44,15 @@ jobs:
       with:
         go-version: ${{ inputs.go-version }}
     - run: go version
-    - name: Cache Go Modules
-      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8  # v3.3.1
-      with:
-        path: |
-          ~/go/pkg/mod
-          ~/.cache/go-build
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+    #- name: Cache Go Modules
+    #  uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8  # v3.3.1
+    #  with:
+    #    path: |
+    #      ~/go/pkg/mod
+    #      ~/.cache/go-build
+    #    key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+    #    restore-keys: |
+    #      ${{ runner.os }}-go-
     - name: Checkout Code
       uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f  # v3.4.0
     - name: Tidy Modules
