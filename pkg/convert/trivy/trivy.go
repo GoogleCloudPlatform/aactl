@@ -15,10 +15,8 @@
 package trivy
 
 import (
-	"context"
 	"fmt"
 
-	"github.com/GoogleCloudPlatform/aactl/pkg/src"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
 	"github.com/Jeffail/gabs/v2"
@@ -27,7 +25,7 @@ import (
 )
 
 // Convert converts Trivy JSON to Grafeas Note/Occurrence format.
-func Convert(ctx context.Context, s *src.Source) (map[string]types.NoteOccurrences, error) {
+func Convert(s *utils.Source) (map[string]types.NoteOccurrences, error) {
 	if s == nil || s.Data == nil {
 		return nil, errors.New("valid source required")
 	}
@@ -63,7 +61,7 @@ func Convert(ctx context.Context, s *src.Source) (map[string]types.NoteOccurrenc
 	return list, nil
 }
 
-func convertNote(s *src.Source, v *gabs.Container) *g.Note {
+func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 	cve := v.Search("VulnerabilityID").Data().(string)
 
 	if v.Search("CVSS", "nvd").Data() == nil {
@@ -129,7 +127,7 @@ func convertNote(s *src.Source, v *gabs.Container) *g.Note {
 }
 
 // convertOccurrence converts Trivy JSON to Grafeas Occurrence format.
-func convertOccurrence(s *src.Source, v *gabs.Container, noteName string, packageType string) *g.Occurrence {
+func convertOccurrence(s *utils.Source, v *gabs.Container, noteName string, packageType string) *g.Occurrence {
 	cve := v.Search("VulnerabilityID").Data().(string)
 
 	if v.Search("CVSS", "nvd").Data() == nil {

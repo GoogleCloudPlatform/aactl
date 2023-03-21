@@ -15,26 +15,25 @@
 package grype
 
 import (
-	"context"
 	"testing"
 
-	"github.com/GoogleCloudPlatform/aactl/pkg/src"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
+	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGrypeConverter(t *testing.T) {
-	opt := &types.ImportOptions{
+	opt := &types.VulnerabilityOptions{
 		Project: types.TestProjectID,
 		Source:  "us-docker.pkg.dev/project/repo/img@sha256:f6efe...",
 		File:    "../../../examples/data/grype.json",
 		Format:  types.SourceFormatGrypeJSON,
 	}
-	s, err := src.NewSource(opt)
+	s, err := utils.NewFileSource(opt.File, opt.Source)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 
-	list, err := Convert(context.TODO(), s)
+	list, err := Convert(s)
 	assert.NoErrorf(t, err, "failed to convert: %v", err)
 	assert.NotNil(t, list)
 

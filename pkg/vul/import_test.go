@@ -25,18 +25,18 @@ import (
 func TestInvalidImport(t *testing.T) {
 	err := Import(context.TODO(), nil)
 	assert.Error(t, err)
-	err = Import(context.TODO(), &types.ImportOptions{})
+	err = Import(context.TODO(), &types.VulnerabilityOptions{})
 	assert.Error(t, err)
-	err = Import(context.TODO(), &types.ImportOptions{
+	err = Import(context.TODO(), &types.VulnerabilityOptions{
 		Source: "us-docker.pkg.dev/project/repo/img@sha256:f6efe...",
 	})
 	assert.Error(t, err)
-	err = Import(context.TODO(), &types.ImportOptions{
+	err = Import(context.TODO(), &types.VulnerabilityOptions{
 		Source: "us-docker.pkg.dev/project/repo/img@sha256:f6efe...",
 		File:   "bad/path/to/file.json",
 	})
 	assert.Error(t, err)
-	err = Import(context.TODO(), &types.ImportOptions{
+	err = Import(context.TODO(), &types.VulnerabilityOptions{
 		Source: "us-docker.pkg.dev/project/repo/img@sha256:f6efe...",
 		File:   "../../../examples/data/grype.json",
 	})

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package sigstore
+package attestation
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -29,7 +28,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
-func Convert(ctx context.Context, nr utils.NoteResource, resourceURL string, env *provenance.Envelope) (*g.Note, *g.Occurrence, error) {
+// Convert converts a provenance statement to a Grafeas note and occurrence.
+func Convert(nr utils.NoteResource, resourceURL string, env *provenance.Envelope) (*g.Note, *g.Occurrence, error) {
 	prov, err := getProvenance(env)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "error getting provenance")

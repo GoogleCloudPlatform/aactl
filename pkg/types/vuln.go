@@ -32,7 +32,7 @@ var (
 	ErrInvalidSource  = errors.New("invalid source")
 )
 
-type ImportOptions struct {
+type VulnerabilityOptions struct {
 	// Project is the ID of the project to import the report into.
 	Project string
 
@@ -49,28 +49,28 @@ type ImportOptions struct {
 	Quiet bool
 }
 
-func (i *ImportOptions) Validate() error {
-	if i.Project == "" {
+func (o *VulnerabilityOptions) Validate() error {
+	if o.Project == "" {
 		return ErrMissingProject
 	}
 
 	// Validate URL and ensure that scheme is specified
-	if i.Source == "" {
+	if o.Source == "" {
 		return ErrMissingSource
 	}
-	u, err := url.Parse(i.Source)
+	u, err := url.Parse(o.Source)
 	if err != nil {
 		return errors.Wrap(ErrInvalidSource, err.Error())
 	}
 	if u.Scheme == "" {
 		u.Scheme = "https"
 	}
-	i.Source = u.String()
+	o.Source = u.String()
 
-	if i.File == "" {
+	if o.File == "" {
 		return ErrMissingPath
 	}
-	if i.Format == SourceFormatUnknown {
+	if o.Format == SourceFormatUnknown {
 		return ErrMissingFormat
 	}
 	return nil

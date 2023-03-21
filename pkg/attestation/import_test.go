@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package sigstore
+package attestation
 
 import (
 	"testing"
@@ -25,9 +25,9 @@ import (
 func TestInvalidImport(t *testing.T) {
 	err := Import(context.TODO(), nil)
 	assert.Error(t, err)
-	err = Import(context.TODO(), &types.ImportSigstoreOptions{})
+	err = Import(context.TODO(), &types.AttestationOptions{})
 	assert.Error(t, err)
-	err = Import(context.TODO(), &types.ImportSigstoreOptions{
+	err = Import(context.TODO(), &types.AttestationOptions{
 		Source: "us-docker.pkg.dev/project/repo/img@sha256:f6efe...",
 	})
 	assert.Error(t, err)

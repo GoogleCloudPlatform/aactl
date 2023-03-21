@@ -12,31 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package src
+package utils
 
 import (
-	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/Jeffail/gabs/v2"
 	"github.com/pkg/errors"
 )
 
 // NewSource returns a new Source from the given path.
-func NewSource(opt *types.ImportOptions) (*Source, error) {
-	if opt == nil {
-		return nil, errors.New("options required")
-	}
-
-	if opt.File == "" {
+func NewFileSource(path, uri string) (*Source, error) {
+	if path == "" {
 		return nil, errors.New("file is required")
 	}
 
-	c, err := gabs.ParseJSONFile(opt.File)
+	c, err := gabs.ParseJSONFile(path)
 	if err != nil {
-		return nil, errors.Wrapf(err, "unable to parse file: %s", opt.File)
+		return nil, errors.Wrapf(err, "unable to parse file: %s", path)
 	}
 
 	s := &Source{
-		URI:  opt.Source,
+		URI:  uri,
 		Data: c,
 	}
 

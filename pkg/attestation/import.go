@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package sigstore
+package attestation
 
 import (
 	"context"
@@ -32,7 +32,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func Import(ctx context.Context, opt *types.ImportSigstoreOptions) error {
+// Import imports attestation metadata from a source.
+func Import(ctx context.Context, opt *types.AttestationOptions) error {
 	if opt == nil {
 		return errors.New("options required")
 	}
@@ -74,7 +75,7 @@ func importEnvelopes(ctx context.Context, envs []*provenance.Envelope, nr utils.
 	defer c.Close()
 
 	for _, env := range envs {
-		n, o, err := Convert(ctx, nr, resourceURL, env)
+		n, o, err := Convert(nr, resourceURL, env)
 		if err != nil {
 			return errors.Wrap(err, "error importing envelopes")
 		}
