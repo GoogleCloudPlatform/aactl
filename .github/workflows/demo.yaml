@@ -36,6 +36,9 @@ on:
 permissions:
   contents: read
 
+env:
+  IMAGE_TAG: v${{ github.run_number }}
+
 jobs:
 
   conf:
@@ -91,7 +94,7 @@ jobs:
         images: |
           ${{ needs.conf.outputs.registry_uri }}/${{ inputs.image_name }}
         tags: |
-          "v${GITHUB_RUN_NUMBER}"
+          ${{ env.IMAGE_TAG }}
 
     - name: Registry Auth
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2.1.0
@@ -113,7 +116,7 @@ jobs:
     - name: Export Image
       id: image
       run: |
-        echo "image=${{ inputs.image_repo }}/${{ inputs.image_name }}" >> $GITHUB_OUTPUT
+        echo "image=${{ needs.conf.outputs.registry_uri }}/${{ inputs.image_name }}" >> $GITHUB_OUTPUT
         echo "digest=${{ steps.push.outputs.digest }}" >> $GITHUB_OUTPUT
 
   provenance:
