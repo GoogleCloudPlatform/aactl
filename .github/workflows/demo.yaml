@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
     inputs:
       docker_file:
-        description: 'Path to source Dockerfile (e.g. examples/containers/Dockerfile.django)'
+        description: 'Path to source Dockerfile (e.g. Dockerfile.django)'
         required: true
         type: string
       image_name:
@@ -46,6 +46,9 @@ jobs:
       TARGET_REPO: us-west1-docker.pkg.dev/cloudy-build/demo
       TARGET_PROJECT: cloudy-build
     steps:
+
+    - name: Checkout Code
+      uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f  # v3.4.0
 
     - id: auth
       name: Auth GCP
@@ -75,7 +78,7 @@ jobs:
       id: push
       uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4.0.0
       with:
-        context: .
+        context: examples/containers
         push: true
         file: ${{ inputs.docker_file }}
         tags: ${{ steps.meta.outputs.tags }}
