@@ -17,10 +17,15 @@ name: demo
 on:
   workflow_dispatch:
     inputs:
-      docker_file:
-        description: 'Path to source Dockerfile (e.g. examples/containers/Dockerfile.django)'
+      docker_ctx:
+        description: 'Path to source Dockerfile (e.g. examples/apps/django)'
         required: true
         type: string
+      docker_file:
+        description: 'Path to source Dockerfile (default: Dockerfile)'
+        required: false
+        type: string
+        default: Dockerfile
       image_name:
         description: 'Target image name (e.g. django)'
         required: true
@@ -78,8 +83,8 @@ jobs:
       id: push
       uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4.0.0
       with:
-        context: .
         push: true
+        context: ${{ inputs.docker_ctx }}
         file: ${{ inputs.docker_file }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
