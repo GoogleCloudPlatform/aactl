@@ -44,7 +44,6 @@ jobs:
       SA_EMAIL: aactl-github-actions-user@cloudy-build.iam.gserviceaccount.com
       REG_URI: us-west1-docker.pkg.dev/cloudy-build/demo
       PROJECT_ID: cloudy-build
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,7 +53,6 @@ jobs:
       registry_uri: ${{ steps.conf.outputs.registry_uri }}
       project_id: ${{ steps.conf.outputs.project_id }}
     steps:
-
     - name: Export Config
       id: conf
       run: |
@@ -123,13 +121,12 @@ jobs:
     - conf
     - build
     permissions:
+      contents: read
       actions: read
       id-token: write
       packages: write
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.5.0
+    uses: ./.github/workflows/slsa.yaml
     with:
-      image: ${{ needs.build.outputs.image }}
-      digest: ${{ needs.build.outputs.digest }}
-      registry-username: ${{ github.actor }}
-      gcp-workload-identity-provider: ${{ needs.conf.outputs.provider_id }}
-      gcp-service-account: ${{ needs.conf.outputs.service_account }}
+      auth_provider: ${{ needs.conf.outputs.provider_id }}
+      auth_user: ${{ needs.conf.outputs.service_account }}
+      image_digest: ${{ needs.build.outputs.image }}@${{ needs.build.outputs.digest }}
