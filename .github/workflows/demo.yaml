@@ -18,20 +18,20 @@ on:
   workflow_dispatch:
     inputs:
       docker_ctx:
-        description: 'Path to source Dockerfile (e.g. examples/apps/django)'
+        description: 'Build context (e.g. examples/apps/django/)'
         required: true
         type: string
       docker_file:
-        description: 'Path to source Dockerfile (default: Dockerfile)'
+        description: 'Dockerfile path (default: Dockerfile)'
         required: false
         type: string
         default: Dockerfile
       image_name:
-        description: 'Target image name (e.g. django)'
+        description: 'Image name (e.g. django)'
         required: true
         type: string
       image_version:
-        description: 'Target image version (default: latest)'
+        description: 'Image tag (default: latest)'
         required: false
         type: string
         default: latest
