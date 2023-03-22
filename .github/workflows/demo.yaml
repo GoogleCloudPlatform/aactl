@@ -1,0 +1,99 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: demo
+
+on:
+  workflow_call:
+    inputs:
+      docker_file:
+        description: 'Path to source Dockerfile (e.g. examples/containers/Dockerfile.django)'
+        required: true
+        type: string
+      docker_ctx:
+        description: 'Docker context (default: examples/containers)'
+        required: false
+        type: string
+        default: examples/containers
+      image_name:
+        description: 'Target image name (e.g. django)'
+        required: true
+        type: string
+      image_version:
+        description: 'Target image version (default: latest)'
+        required: false
+        type: string
+        default: latest
+
+    outputs:
+      digest:
+        value: ${{ jobs.build.outputs.digest }}
+
+permissions:
+  contents: read
+
+env:
+  AUTH_PROVIDER: projects/689738033528/locations/global/workloadIdentityPools/aactl-github-pool/providers/github-provider
+  AUTH_USER: aactl-github-actions-user@cloudy-build.iam.gserviceaccount.com
+  TARGET_REPO: us-west1-docker.pkg.dev/cloudy-build/demo
+  TARGET_PROJECT: cloudy-build
+
+jobs:
+  build:
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      id-token: write
+    steps:
+
+    - id: auth
+      name: Auth GCP
+      uses: google-github-actions/auth@ef5d53e30bbcd8d0836f4288f5e50ff3e086997d  # v1.0.0
+      with:
+        token_format: "access_token"
+        workload_identity_provider: ${{ env.AUTH_PROVIDER }}
+        service_account: ${{ env.AUTH_USER }}
+
+    - name: Define Metadata
+      id: meta
+      uses: docker/metadata-action@507c2f2dc502c992ad446e3d7a5dfbe311567a96  # v4.3.0
+      with:
+        images: |
+          ${{ env.TARGET_REPO }}/${{ inputs.image_name }}
+        tags: |
+          type=raw,enable=true,value=${{ inputs.image_version }}
+
+    - name: Registry Auth
+      uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2.1.0
+      with:
+        registry: ${{ env.TARGET_REPO }}
+        username: oauth2accesstoken
+        password: ${{ steps.auth.outputs.access_token }}
+
+    - name: Image Push
+      id: push
+      uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4.0.0
+      with:
+        context: ${{ inputs.docker_ctx }}
+        file: ${{ inputs.docker_file }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+    - name: Export Digest
+      id: image
+      run: |
+        echo "digest=${{ env.TARGET_REPO }}/${{ inputs.image_name }}@${{ steps.push.outputs.digest }}" >> $GITHUB_OUTPUT
