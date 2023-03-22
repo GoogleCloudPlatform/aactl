@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package trivy
+package grype
 
 import (
 	"testing"
@@ -22,12 +22,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTrivyConverter(t *testing.T) {
+func TestGrypeConverter(t *testing.T) {
 	opt := &types.VulnerabilityOptions{
 		Project: types.TestProjectID,
 		Source:  "us-docker.pkg.dev/project/repo/img@sha256:f6efe...",
-		File:    "../../../examples/data/trivy.json",
-		Format:  types.SourceFormatSnykJSON,
+		File:    "../../../../examples/data/grype.json",
+		Format:  types.SourceFormatGrypeJSON,
 	}
 	s, err := utils.NewFileSource(opt.File, opt.Source)
 	assert.NoError(t, err)
@@ -42,11 +42,13 @@ func TestTrivyConverter(t *testing.T) {
 		assert.NotEmpty(t, id)
 		assert.NotEmpty(t, n.Name)
 		assert.NotEmpty(t, n.ShortDescription)
+		assert.NotEmpty(t, n.LongDescription)
 		assert.NotEmpty(t, n.RelatedUrl)
 		for _, u := range n.RelatedUrl {
 			assert.NotEmpty(t, u.Label)
 			assert.NotEmpty(t, u.Url)
 		}
+
 		assert.NotNil(t, n.GetVulnerability())
 		assert.NotEmpty(t, n.GetVulnerability().CvssScore)
 		assert.NotNil(t, n.GetVulnerability().CvssVersion)

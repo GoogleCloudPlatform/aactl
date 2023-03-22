@@ -15,6 +15,8 @@
 package grype
 
 import (
+	"fmt"
+
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
 	"github.com/Jeffail/gabs/v2"
@@ -23,7 +25,7 @@ import (
 )
 
 // Convert converts Snyk JSON to Grafeas Note/Occurrence format.
-func Convert(s *utils.Source) (map[string]types.NoteOccurrences, error) {
+func Convert(s *utils.Source) (types.NoteOccurrencesMap, error) {
 	if s == nil || s.Data == nil {
 		return nil, errors.New("valid source required")
 	}
@@ -32,7 +34,7 @@ func Convert(s *utils.Source) (map[string]types.NoteOccurrences, error) {
 		return nil, errors.New("unable to find vulnerabilities in source data")
 	}
 
-	list := make(map[string]types.NoteOccurrences, 0)
+	list := make(types.NoteOccurrencesMap, 0)
 
 	for _, v := range s.Data.Search("matches").Children() {
 		// create note
@@ -91,7 +93,7 @@ func convertOccurrence(s *utils.Source, v *gabs.Container, noteName string) *g.O
 
 	// Create Occurrence
 	o := g.Occurrence{
-		ResourceUri: s.URI,
+		ResourceUri: fmt.Sprintf("https://%s", s.URI),
 		NoteName:    noteName,
 		Details: &g.Occurrence_Vulnerability{
 			Vulnerability: &g.VulnerabilityOccurrence{
