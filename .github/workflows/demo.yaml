@@ -18,23 +18,20 @@ on:
   workflow_dispatch:
     inputs:
       docker_ctx:
-        description: 'Build context (e.g. examples/apps/django/)'
-        required: true
+        description: 'Build context (default: examples/apps/django/)'
+        required: false
         type: string
+        default: examples/apps/django/
       docker_file:
-        description: 'Dockerfile path (default: Dockerfile)'
+        description: 'Dockerfile path (default: examples/apps/django/Dockerfile)'
         required: false
         type: string
-        default: Dockerfile
+        default: examples/apps/django/Dockerfile
       image_name:
-        description: 'Image name (e.g. django)'
-        required: true
-        type: string
-      image_version:
-        description: 'Image tag (default: latest)'
+        description: 'Image name (default: django)'
         required: false
         type: string
-        default: latest
+        default: django
 
 permissions:
   contents: read
@@ -70,7 +67,7 @@ jobs:
         images: |
           ${{ env.TARGET_REPO }}/${{ inputs.image_name }}
         tags: |
-          type=raw,enable=true,value=${{ inputs.image_version }}
+          ${{ env.GITHUB_RUN_ATTEMPT }}
 
     - name: Registry Auth
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2.1.0
