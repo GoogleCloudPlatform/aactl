@@ -68,11 +68,13 @@ gcloud artifacts docker images describe $image --show-provenance --format json
 
 The resulting JSON will look something like this: 
 
-![](examples/images/slsa.png)
+![](examples/images/slsa-console.png)
 
-The data along with the SLSA level can also be viewed in Software Delivery Shield side panel:
+The data can also be viewed in Software Delivery Shield side panel:
 
 ![](examples/images/side-panel.png)
+
+> SLSA level is currently not parsed properly, WIP.
 
 ## Contributing
 
