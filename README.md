@@ -72,7 +72,7 @@ The resulting JSON will look something like this:
 
 The data along with the SLSA level can also be viewed in Software Delivery Shield side panel:
 
-![](examples/images/panel.png)
+![](examples/images/side-panel.png)
 
 ## Contributing
 
