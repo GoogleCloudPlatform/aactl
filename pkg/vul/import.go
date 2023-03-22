@@ -30,10 +30,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const (
-	occurrencePostChannelSize = 10
-)
-
 func Import(ctx context.Context, opt *types.VulnerabilityOptions) error {
 	if opt == nil {
 		return errors.New("options required")
@@ -65,34 +61,32 @@ func Import(ctx context.Context, opt *types.VulnerabilityOptions) error {
 		return errors.New("expected non-nil result")
 	}
 
-	resultCh := make(chan string, occurrencePostChannelSize)
-	exitCh := make(chan error)
-
 	var wg sync.WaitGroup
 
-	go func() {
-		for noteID, nocc := range list {
-			wg.Add(1)
-			go func(noteID string, nocc types.NoteOccurrences) {
-				defer wg.Done()
-				if err := postNoteOccurrences(ctx, opt.Project, noteID, nocc); err != nil {
-					exitCh <- errors.Wrap(err, "error posting notes")
-				}
-				resultCh <- fmt.Sprintf("note: %s, occurrences: %d", noteID, len(nocc.Occurrences))
-			}(noteID, nocc)
-		}
-		wg.Wait()
-		close(exitCh)
-	}()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
-	for {
-		select {
-		case info := <-resultCh:
-			log.Debug().Msg(info)
-		case err := <-exitCh:
-			return err
-		}
+	for noteID, nocc := range list {
+		wg.Add(1)
+		go func(noteID string, nocc types.NoteOccurrences) {
+			defer wg.Done()
+
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
+			if err := postNoteOccurrences(ctx, opt.Project, noteID, nocc); err != nil {
+				log.Error().Err(err).Msg("error posting notes")
+				cancel()
+			}
+		}(noteID, nocc)
 	}
+
+	wg.Wait()
+
+	return nil
 }
 
 // postNoteOccurrences creates new Notes and its associated Occurrences.
