@@ -17,6 +17,7 @@ package vul
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	ca "cloud.google.com/go/containeranalysis/apiv1"
 	"github.com/GoogleCloudPlatform/aactl/pkg/convert"
@@ -27,6 +28,10 @@ import (
 	g "google.golang.org/genproto/googleapis/grafeas/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+)
+
+const (
+	occurrencePostChannelSize = 10
 )
 
 func Import(ctx context.Context, opt *types.VulnerabilityOptions) error {
@@ -60,14 +65,34 @@ func Import(ctx context.Context, opt *types.VulnerabilityOptions) error {
 		return errors.New("expected non-nil result")
 	}
 
-	for noteID, nocc := range list {
-		log.Debug().Msgf("note: %s, occurrences: %d", noteID, len(nocc.Occurrences))
-		if err := postNoteOccurrences(ctx, opt.Project, noteID, nocc); err != nil {
-			return errors.Wrap(err, "error posting notes")
+	resultCh := make(chan string, occurrencePostChannelSize)
+	exitCh := make(chan error)
+
+	var wg sync.WaitGroup
+
+	go func() {
+		for noteID, nocc := range list {
+			wg.Add(1)
+			go func(noteID string, nocc types.NoteOccurrences) {
+				defer wg.Done()
+				if err := postNoteOccurrences(ctx, opt.Project, noteID, nocc); err != nil {
+					exitCh <- errors.Wrap(err, "error posting notes")
+				}
+				resultCh <- fmt.Sprintf("note: %s, occurrences: %d", noteID, len(nocc.Occurrences))
+			}(noteID, nocc)
+		}
+		wg.Wait()
+		close(exitCh)
+	}()
+
+	for {
+		select {
+		case info := <-resultCh:
+			log.Debug().Msg(info)
+		case err := <-exitCh:
+			return err
 		}
 	}
-
-	return nil
 }
 
 // postNoteOccurrences creates new Notes and its associated Occurrences.
