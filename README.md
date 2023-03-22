@@ -48,7 +48,7 @@ gcloud artifacts docker images list $repo \
 
 You can also navigate to Artifact Registry to view the vulnerabilities there. 
 
-![](examples/images/ar.png)
+![](examples/images/ar-vulns.png)
 
 ### Attestation
 
