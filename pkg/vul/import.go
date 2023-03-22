@@ -17,6 +17,7 @@ package vul
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	ca "cloud.google.com/go/containeranalysis/apiv1"
 	"github.com/GoogleCloudPlatform/aactl/pkg/convert"
@@ -60,12 +61,30 @@ func Import(ctx context.Context, opt *types.VulnerabilityOptions) error {
 		return errors.New("expected non-nil result")
 	}
 
+	var wg sync.WaitGroup
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	for noteID, nocc := range list {
-		log.Debug().Msgf("note: %s, occurrences: %d", noteID, len(nocc.Occurrences))
-		if err := postNoteOccurrences(ctx, opt.Project, noteID, nocc); err != nil {
-			return errors.Wrap(err, "error posting notes")
-		}
+		wg.Add(1)
+		go func(noteID string, nocc types.NoteOccurrences) {
+			defer wg.Done()
+
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
+			if err := postNoteOccurrences(ctx, opt.Project, noteID, nocc); err != nil {
+				log.Error().Err(err).Msg("error posting notes")
+				cancel()
+			}
+		}(noteID, nocc)
 	}
+
+	wg.Wait()
 
 	return nil
 }
