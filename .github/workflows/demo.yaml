@@ -21,11 +21,6 @@ on:
         description: 'Path to source Dockerfile (e.g. examples/containers/Dockerfile.django)'
         required: true
         type: string
-      docker_ctx:
-        description: 'Docker context (default: examples/containers)'
-        required: false
-        type: string
-        default: examples/containers
       image_name:
         description: 'Target image name (e.g. django)'
         required: true
@@ -80,9 +75,9 @@ jobs:
       id: push
       uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671  # v4.0.0
       with:
-        context: ${{ inputs.docker_ctx }}
-        file: ${{ inputs.docker_file }}
+        context: .
         push: true
+        file: ${{ inputs.docker_file }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
