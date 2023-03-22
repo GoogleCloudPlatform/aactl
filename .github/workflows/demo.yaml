@@ -36,17 +36,11 @@ on:
         type: string
         default: latest
 
-    outputs:
-      digest:
-        value: ${{ jobs.build.outputs.digest }}
-
 permissions:
   contents: read
 
 jobs:
   build:
-    outputs:
-      digest: ${{ steps.image.outputs.digest }}
     runs-on: ubuntu-latest
     permissions:
       actions: read
