@@ -67,7 +67,7 @@ jobs:
         images: |
           ${{ env.TARGET_REPO }}/${{ inputs.image_name }}
         tags: |
-          "v${{ env.GITHUB_RUN_NUMBER }}"
+          "v${env.GITHUB_RUN_NUMBER}"
 
     - name: Registry Auth
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2.1.0
@@ -86,7 +86,11 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
 
-    - name: Export Digest
-      id: image
-      run: |
-        echo "digest=${{ env.TARGET_REPO }}/${{ inputs.image_name }}@${{ steps.push.outputs.digest }}" >> $GITHUB_OUTPUT
+    - name: Create Provenance
+      uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.5.0
+      with:
+        image: ${{ env.TARGET_REPO }}/${{ inputs.image_name }}
+        digest: ${{ steps.push.outputs.digest }}
+        registry-username: ${{ github.actor }}
+        gcp-workload-identity-provider: ${{ env.AUTH_PROVIDER }}
+        gcp-service-account: ${{ env.AUTH_USER }}
