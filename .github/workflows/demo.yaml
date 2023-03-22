@@ -67,7 +67,7 @@ jobs:
         images: |
           ${{ env.TARGET_REPO }}/${{ inputs.image_name }}
         tags: |
-          ${{ env.GITHUB_RUN_ATTEMPT }}
+          "v${{ env.GITHUB_RUN_NUMBER }}"
 
     - name: Registry Auth
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2.1.0
