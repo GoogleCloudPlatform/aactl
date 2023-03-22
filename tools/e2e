@@ -11,21 +11,24 @@ bin/aactl -v
 bin/aactl -h
 
 msg "import snyk"
-bin/aactl vulnerability --project test \
-                        --source us-west1-docker.pkg.dev/cloudy-build/aactl/ruby-demo@sha256:666b0f0498092184d635ac8fc53e30586f7bb8895e7ed8afba60632398c1af74 \
-                        --file examples/data/snyk-ruby.json \
-                        --format snyk
+bin/aactl vul --project test \
+              --source us-west1-docker.pkg.dev/cloudy-build/aactl/ruby-demo@sha256:666b0f0498092184d635ac8fc53e30586f7bb8895e7ed8afba60632398c1af74 \
+              --file examples/data/snyk-ruby.json \
+              --format snyk
 
 msg "import grype"
-bin/aactl vulnerability --project test \
-                        --source us-west1-docker.pkg.dev/cloudy-build/aactl/node-demo@sha256:5bf6464d1b72e0f1d3c32005b234f875daece4581a74bd62dd49de0276f1fa05 \
-                        --file examples/data/grype-node.json \
-                        --format grype
+bin/aactl vul --project test \
+              --source us-west1-docker.pkg.dev/cloudy-build/aactl/node-demo@sha256:5bf6464d1b72e0f1d3c32005b234f875daece4581a74bd62dd49de0276f1fa05 \
+              --file examples/data/grype-node.json \
+              --format grype
 
 msg "import snyk"
-bin/aactl vulnerability --project test \
-                        --source redis \
-                        --file examples/data/trivy-redis.json \
-                        --format trivy
+bin/aactl vul --project test \
+              --source redis \
+              --file examples/data/trivy-redis.json \
+              --format trivy
 
-# TODO: add attestation tests
+
+msg "attest django"
+bin/aactl att --project test \
+              --source us-west1-docker.pkg.dev/cloudy-build/demo/django@sha256:86a8fb755258259703f3a780c6502df24c98953293fe441c0035113a15730710

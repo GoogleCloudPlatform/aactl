@@ -16,38 +16,24 @@ package cli
 
 import (
 	"flag"
-	"fmt"
 	"testing"
-	"time"
 
-	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/urfave/cli/v2"
 )
 
-func TestVulnerabilityImport(t *testing.T) {
+func TestAttestationImport(t *testing.T) {
 	// test no arg import
 	set := flag.NewFlagSet("", flag.ContinueOnError)
 	c := cli.NewContext(newTestApp(t), set, nil)
-	err := vulnerabilityCmd(c)
+	err := attestationCmd(c)
 	assert.Error(t, err)
 
-	// test all formats
-	for _, f := range types.GetSourceFormatNames() {
-		set = flag.NewFlagSet("", flag.ContinueOnError)
-		set.String(projectFlag.Name, types.TestProjectID, "")
-		set.String(sourceFlag.Name, "us-docker.pkg.dev/project/repo/img@sha256:f6efe...", "")
-		set.String(fileFlag.Name, fmt.Sprintf("../../../examples/data/%s.json", f), "")
-		set.String(formatFlag.Name, f, "")
+	set = flag.NewFlagSet("", flag.ContinueOnError)
+	set.String(projectFlag.Name, "cloudy-build", "")
+	set.String(sourceFlag.Name, "us-west1-docker.pkg.dev/cloudy-build/demo/django@sha256:86a8fb755258259703f3a780c6502df24c98953293fe441c0035113a15730710", "")
 
-		c = cli.NewContext(newTestApp(t), set, nil)
-		err = vulnerabilityCmd(c)
-		assert.NoError(t, err)
-	}
-}
-
-func newTestApp(t *testing.T) *cli.App {
-	app, err := newApp("v0.0.0-test", "test", time.Now().UTC().Format(time.RFC3339))
+	c = cli.NewContext(newTestApp(t), set, nil)
+	err = attestationCmd(c)
 	assert.NoError(t, err)
-	return app
 }

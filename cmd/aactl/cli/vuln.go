@@ -26,7 +26,7 @@ var (
 		Name:    "vulnerability",
 		Aliases: []string{"vul", "vuln", "vulns"},
 		Usage:   "import vulnerabilities from file",
-		Action:  importCmd,
+		Action:  vulnerabilityCmd,
 		Flags: []c.Flag{
 			projectFlag,
 			sourceFlag,
@@ -36,7 +36,7 @@ var (
 	}
 )
 
-func importCmd(c *c.Context) error {
+func vulnerabilityCmd(c *c.Context) error {
 	f, err := types.ParseSourceFormat(c.String(formatFlag.Name))
 	if err != nil {
 		return errors.Wrap(err, "error parsing source format")
