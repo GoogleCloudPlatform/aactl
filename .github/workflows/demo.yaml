@@ -91,7 +91,7 @@ jobs:
         images: |
           ${{ needs.conf.outputs.registry_uri }}/${{ inputs.image_name }}
         tags: |
-          "v${env.GITHUB_RUN_NUMBER}"
+          "v${GITHUB_RUN_NUMBER}"
 
     - name: Registry Auth
       uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a  # v2.1.0
@@ -121,12 +121,13 @@ jobs:
     - conf
     - build
     permissions:
-      contents: read
       actions: read
       id-token: write
       packages: write
-    uses: ./.github/workflows/slsa.yaml
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.5.0
     with:
-      auth_provider: ${{ needs.conf.outputs.provider_id }}
-      auth_user: ${{ needs.conf.outputs.service_account }}
-      image_digest: ${{ needs.build.outputs.image }}@${{ needs.build.outputs.digest }}
+      image: ${{ needs.build.outputs.image }}
+      digest: ${{ needs.build.outputs.digest }}
+      registry-username: ${{ github.actor }}
+      gcp-workload-identity-provider: ${{ needs.conf.outputs.provider_id }}
+      gcp-service-account: ${{ needs.conf.outputs.service_account }}
