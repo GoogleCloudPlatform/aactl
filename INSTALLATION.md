@@ -68,6 +68,7 @@ Make sure you have the following Identity and Access Management (IAM) roles in e
 > Learn how to grant multiple IAM roles to a user [here](https://cloud.google.com/iam/docs/granting-changing-revoking-access#multiple-roles)
 
 ```shell
+roles/artifactregistry.reader
 roles/containeranalysis.occurrences.editor
 roles/containeranalysis.notes.editor
 ```
