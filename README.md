@@ -43,7 +43,7 @@ To review the imported vulnerabilities in GCP:
 gcloud artifacts docker images list $repo \
   --show-occurrences \
   --format json \
-  --occurrence-filter 'kind="VULNERABILITY" AND noteProjectId="$project" AND resource_url="$image" AND noteId="CVE-2005-2541"'
+  --occurrence-filter "kind=\"VULNERABILITY\" AND resource_url=\"https://$image\""
 ```
 
 You can also navigate to Artifact Registry to view the vulnerabilities there. 
