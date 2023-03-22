@@ -15,7 +15,7 @@
 name: demo
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       docker_file:
         description: 'Path to source Dockerfile (e.g. examples/containers/Dockerfile.django)'
