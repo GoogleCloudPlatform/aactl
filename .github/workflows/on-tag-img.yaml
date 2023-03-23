@@ -140,4 +140,4 @@ jobs:
       target_project: ${{ needs.conf.outputs.project_id }}
       image_digest: ${{ needs.image.outputs.digest }}
     secrets:
-      access_token: ${{ secrets.ACCESS_TOKEN }}
+      access_token: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
