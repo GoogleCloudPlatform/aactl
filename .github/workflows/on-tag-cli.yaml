@@ -96,6 +96,8 @@ jobs:
       base64-subjects: "${{ needs.release.outputs.hashes }}"
       upload-assets: true
       compile-generator: true
+      token: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+      private-repository: true
 
   verify:
     env:

@@ -75,6 +75,8 @@ jobs:
     with:
       go-version: ${{ needs.conf.outputs.go_version }}
       scan-severity: ${{ needs.conf.outputs.err_on_vulnerability_sev }}
+    secrets:
+      access_token: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
 
   image:
     needs:

@@ -40,6 +40,10 @@ on:
     outputs:
       digest:
         value: ${{ jobs.build.outputs.digest }}
+    secrets:
+      access_token:
+        description: 'Workflow token'
+        required: true
 
 permissions:
   contents: read
