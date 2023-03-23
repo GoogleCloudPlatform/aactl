@@ -37,6 +37,10 @@ on:
         description: 'Path to vulnerability scan report'
         type: string
         default: 'report.json'
+    secrets:
+      access_token:
+        description: 'Workflow token'
+        required: true
 
 permissions:
   contents: read
@@ -51,6 +55,8 @@ jobs:
 
     - name: Checkout Code
       uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f  # v3.4.0
+      with:
+        token: ${{ secrets.access_token }}
 
     - id: auth
       name: Auth GCP
