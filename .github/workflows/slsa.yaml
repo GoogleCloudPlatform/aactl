@@ -72,7 +72,6 @@ jobs:
       registry-username: ${{ github.actor }}
       gcp-workload-identity-provider: ${{ inputs.auth_provider }}
       gcp-service-account: ${{ inputs.auth_user }}
-      token: ${{ secrets.access_token }}
       private-repository: true
 
   verify:
@@ -86,6 +85,8 @@ jobs:
 
     - name: Checkout Code
       uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f  # v3.4.0
+      with:
+        token: ${{ secrets.access_token }}
 
     - id: auth
       name: Auth GCP
