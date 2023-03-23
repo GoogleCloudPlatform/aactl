@@ -31,6 +31,9 @@ on:
         required: false
         type: string
         default: 'v1.51'
+    secrets:
+      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        required: true
 permissions:
   contents: read
 jobs:
