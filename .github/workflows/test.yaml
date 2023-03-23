@@ -33,7 +33,7 @@ on:
         default: 'v1.51'
     secrets:
       access_token:
-        description: 'Personal access token'
+        description: 'Workflow token'
         required: true
 permissions:
   contents: read
