@@ -3,7 +3,7 @@ module github.com/GoogleCloudPlatform/aactl
 go 1.20
 
 require (
-	cloud.google.com/go/containeranalysis v0.8.0
+	cloud.google.com/go/containeranalysis v0.9.0
 	github.com/Jeffail/gabs/v2 v2.7.0
 	github.com/google/go-containerregistry v0.14.0
 	github.com/in-toto/in-toto-golang v0.6.0
