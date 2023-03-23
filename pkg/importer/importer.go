@@ -12,30 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package convert
+package importer
 
 import (
-	"github.com/GoogleCloudPlatform/aactl/pkg/convert/grype"
-	"github.com/GoogleCloudPlatform/aactl/pkg/convert/snyk"
-	"github.com/GoogleCloudPlatform/aactl/pkg/convert/trivy"
+	"context"
+
+	"github.com/GoogleCloudPlatform/aactl/pkg/attestation"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
-	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
+	"github.com/GoogleCloudPlatform/aactl/pkg/vul"
 	"github.com/pkg/errors"
 )
 
-// VulnerabilityConverter is a function that converts a source to a list of AA notes.
-type VulnerabilityConverter func(s *utils.Source) (map[string]types.NoteOccurrences, error)
+type Importer func(ctx context.Context, options types.Options) error
 
-// GetConverter returns a vulnerability converter for the given format.
-func GetConverter(format types.SourceFormat) (VulnerabilityConverter, error) {
+func GetImporter(format types.SourceFormat) (Importer, error) {
 	switch format {
 	case types.SourceFormatSnykJSON:
-		return snyk.Convert, nil
+		return vul.Import, nil
 	case types.SourceFormatTrivyJSON:
-		return trivy.Convert, nil
-	case types.SourceFormatGrypeJSON:
-		return grype.Convert, nil
+		return attestation.Import, nil
 	default:
-		return nil, errors.Errorf("unimplemented conversion format: %s", format)
+		return nil, errors.Errorf("unimplemented importer format: %s", format)
 	}
 }

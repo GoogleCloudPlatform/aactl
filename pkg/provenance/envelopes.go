@@ -57,11 +57,6 @@ func GetVerifiedEnvelopes(ctx context.Context, resourceURI string) ([]*Envelope,
 
 		log.Debug().Msgf("In-Toto Type (%s), PredicateType (%s)", penv.IntotoType, penv.IntotoPredicateType)
 
-		// TODO: Currently only one slsa version supported
-		if penv.IntotoType != "https://in-toto.io/Statement/v0.1" || penv.IntotoPredicateType != "https://slsa.dev/provenance/v0.2" {
-			continue
-		}
-
 		envs = append(envs, penv)
 	}
 

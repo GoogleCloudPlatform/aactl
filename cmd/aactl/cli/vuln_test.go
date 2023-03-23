@@ -29,7 +29,7 @@ func TestImport(t *testing.T) {
 	// test no arg import
 	set := flag.NewFlagSet("", flag.ContinueOnError)
 	c := cli.NewContext(newTestApp(t), set, nil)
-	err := importCmd(c)
+	err := vulnerabilityCmd(c)
 	assert.Error(t, err)
 
 	// test all formats
@@ -41,7 +41,7 @@ func TestImport(t *testing.T) {
 		set.String(formatFlag.Name, f, "")
 
 		c = cli.NewContext(newTestApp(t), set, nil)
-		err = importCmd(c)
+		err = vulnerabilityCmd(c)
 		assert.NoError(t, err)
 	}
 }
