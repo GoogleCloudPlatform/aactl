@@ -139,3 +139,4 @@ jobs:
       auth_user: ${{ needs.conf.outputs.service_account }}
       target_project: ${{ needs.conf.outputs.project_id }}
       image_digest: ${{ needs.image.outputs.digest }}
+      access_token: ${{ secrets.ACCESS_TOKEN }}
