@@ -5,33 +5,33 @@
 class Aactl < Formula
   desc "Vulnerability management tool."
   homepage "https://github.com/GoogleCloudPlatform/aactl"
-  version "0.4.9"
+  version "0.4.10"
   license "Apache-2.0"
 
   on_macos do
-    url "https://github.com/GoogleCloudPlatform/aactl/releases/download/v0.4.9/aactl_0.4.9_darwin_all"
-    sha256 "4363380c4acecc42ec91b7a6da63d93766e64018a85b57d1b35b4a923cc08da2"
+    url "https://github.com/GoogleCloudPlatform/aactl/releases/download/v0.4.10/aactl_0.4.10_darwin_all"
+    sha256 "fd3792618461a426e7b6f43b6b65fae0d787e225393f68d100d2cf0ec6ff7c06"
 
     def install
-      bin.install "aactl_0.4.9_darwin_all" => "aactl"
+      bin.install "aactl_0.4.10_darwin_all" => "aactl"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/GoogleCloudPlatform/aactl/releases/download/v0.4.9/aactl_0.4.9_linux_arm64"
-      sha256 "a14052b2936102638d03b5d4b3d8758ea53398f5c4d2eea3234088ffdf9a41c6"
+      url "https://github.com/GoogleCloudPlatform/aactl/releases/download/v0.4.10/aactl_0.4.10_linux_arm64"
+      sha256 "c2cb697c5dbcab6d4989bbace72d23716ffa239e4351e7e667d2a26838303a4d"
 
       def install
-        bin.install "aactl_0.4.9_linux_arm64" => "aactl"
+        bin.install "aactl_0.4.10_linux_arm64" => "aactl"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/GoogleCloudPlatform/aactl/releases/download/v0.4.9/aactl_0.4.9_linux_amd64"
-      sha256 "b77354114e7f97bfac89089fa7a74d5fb46c6382c74118439817975d8a138417"
+      url "https://github.com/GoogleCloudPlatform/aactl/releases/download/v0.4.10/aactl_0.4.10_linux_amd64"
+      sha256 "ec01d5320302500216b39de85f7ac556d784891870cc1b8bf0250afbe9462a02"
 
       def install
-        bin.install "aactl_0.4.9_linux_amd64" => "aactl"
+        bin.install "aactl_0.4.10_linux_amd64" => "aactl"
       end
     end
   end
