@@ -47,9 +47,7 @@ func (o *AttestationOptions) Validate() error {
 	if err != nil {
 		return errors.Wrap(ErrInvalidSource, err.Error())
 	}
-	if u.Scheme == "" {
-		u.Scheme = ""
-	}
+	u.Scheme = ""
 	o.Source = u.String()
 
 	return nil

@@ -3,7 +3,7 @@ module github.com/GoogleCloudPlatform/aactl
 go 1.20
 
 require (
-	cloud.google.com/go/containeranalysis v0.8.0
+	cloud.google.com/go/containeranalysis v0.9.0
 	github.com/Jeffail/gabs/v2 v2.7.0
 	github.com/google/go-containerregistry v0.14.0
 	github.com/in-toto/in-toto-golang v0.6.0
@@ -12,7 +12,7 @@ require (
 	github.com/secure-systems-lab/go-securesystemslib v0.4.0
 	github.com/sigstore/cosign v1.13.1
 	github.com/stretchr/testify v1.8.2
-	github.com/urfave/cli/v2 v2.25.0
+	github.com/urfave/cli/v2 v2.25.1
 	golang.org/x/net v0.8.0
 	google.golang.org/api v0.114.0
 	google.golang.org/genproto v0.0.0-20230320184635-7606e756e683

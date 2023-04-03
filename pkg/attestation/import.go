@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	ca "cloud.google.com/go/containeranalysis/apiv1"
+	"github.com/GoogleCloudPlatform/aactl/pkg/attestation/convert"
 	"github.com/GoogleCloudPlatform/aactl/pkg/container"
 	"github.com/GoogleCloudPlatform/aactl/pkg/provenance"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
@@ -33,11 +34,12 @@ import (
 )
 
 // Import imports attestation metadata from a source.
-func Import(ctx context.Context, opt *types.AttestationOptions) error {
-	if opt == nil {
-		return errors.New("options required")
+func Import(ctx context.Context, options types.Options) error {
+	opt, ok := options.(*types.AttestationOptions)
+	if !ok || opt == nil {
+		return errors.New("valid options required")
 	}
-	if err := opt.Validate(); err != nil {
+	if err := options.Validate(); err != nil {
 		return errors.Wrap(err, "error validating options")
 	}
 
@@ -75,7 +77,12 @@ func importEnvelopes(ctx context.Context, envs []*provenance.Envelope, nr utils.
 	defer c.Close()
 
 	for _, env := range envs {
-		n, o, err := Convert(nr, resourceURL, env)
+		converter, err := convert.GetConverter(env.IntotoType, env.IntotoPredicateType)
+		if err != nil && !errors.Is(err, types.ErrorNotSupported) {
+			return errors.Wrap(err, "error getting envelope converter")
+		}
+
+		n, o, err := converter(nr, resourceURL, env)
 		if err != nil {
 			return errors.Wrap(err, "error importing envelopes")
 		}

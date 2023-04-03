@@ -8,10 +8,10 @@ digest=$2
 snyk container test --app-vulns \
                     --json-file-output=report.json $digest
 
-bin/aactl --debug import --project cloudy-labz \
-                          --source $digest \
-                          --file report.json \
-                          --format snyk
+bin/aactl --debug vulnerability --project cloudy-labz \
+                                --source $digest \
+                                --file report.json \
+                                --format snyk
 
 gcloud artifacts docker images describe $digest \
     --project $project \

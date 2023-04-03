@@ -62,9 +62,7 @@ func (o *VulnerabilityOptions) Validate() error {
 	if err != nil {
 		return errors.Wrap(ErrInvalidSource, err.Error())
 	}
-	if u.Scheme == "" {
-		u.Scheme = "https"
-	}
+	u.Scheme = ""
 	o.Source = u.String()
 
 	if o.File == "" {

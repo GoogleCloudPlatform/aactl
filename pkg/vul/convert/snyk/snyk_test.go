@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package grype
+package snyk
 
 import (
 	"testing"
@@ -22,12 +22,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGrypeConverter(t *testing.T) {
+func TestSnykConverter(t *testing.T) {
 	opt := &types.VulnerabilityOptions{
 		Project: types.TestProjectID,
 		Source:  "us-docker.pkg.dev/project/repo/img@sha256:f6efe...",
-		File:    "../../../examples/data/grype.json",
-		Format:  types.SourceFormatGrypeJSON,
+		File:    "../../../../examples/data/snyk.json",
+		Format:  types.SourceFormatSnykJSON,
 	}
 	s, err := utils.NewFileSource(opt.File, opt.Source)
 	assert.NoError(t, err)
@@ -48,10 +48,11 @@ func TestGrypeConverter(t *testing.T) {
 			assert.NotEmpty(t, u.Label)
 			assert.NotEmpty(t, u.Url)
 		}
-
 		assert.NotNil(t, n.GetVulnerability())
 		assert.NotEmpty(t, n.GetVulnerability().CvssScore)
 		assert.NotNil(t, n.GetVulnerability().CvssVersion)
+		assert.NotNil(t, n.GetVulnerability().CvssV3)
+		assert.NotEmpty(t, n.GetVulnerability().CvssV3.BaseScore)
 		assert.NotEmpty(t, n.GetVulnerability().Severity)
 		assert.NotEmpty(t, n.GetVulnerability().Details)
 		for _, d := range n.GetVulnerability().Details {

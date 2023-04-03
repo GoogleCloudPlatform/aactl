@@ -20,9 +20,9 @@ import (
 	"sync"
 
 	ca "cloud.google.com/go/containeranalysis/apiv1"
-	"github.com/GoogleCloudPlatform/aactl/pkg/convert"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
+	"github.com/GoogleCloudPlatform/aactl/pkg/vul/convert"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	g "google.golang.org/genproto/googleapis/grafeas/v1"
@@ -30,11 +30,12 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func Import(ctx context.Context, opt *types.VulnerabilityOptions) error {
-	if opt == nil {
-		return errors.New("options required")
+func Import(ctx context.Context, options types.Options) error {
+	opt, ok := options.(*types.VulnerabilityOptions)
+	if !ok || opt == nil {
+		return errors.New("valid options required")
 	}
-	if err := opt.Validate(); err != nil {
+	if err := options.Validate(); err != nil {
 		return errors.Wrap(err, "error validating options")
 	}
 	s, err := utils.NewFileSource(opt.File, opt.Source)
@@ -57,6 +58,10 @@ func Import(ctx context.Context, opt *types.VulnerabilityOptions) error {
 
 	log.Info().Msgf("found %d vulnerabilities", len(list))
 
+	return post(ctx, list, opt)
+}
+
+func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.VulnerabilityOptions) error {
 	if list == nil {
 		return errors.New("expected non-nil result")
 	}
