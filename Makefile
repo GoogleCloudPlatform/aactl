@@ -72,15 +72,6 @@ image: ## Builds the docker image
 		-t aactl:$(RELEASE_VERSION) \
 		.
 
-.PHONY: setup
-setup: ## Creates the GCP resources 
-	terraform -chdir=./setup init
-	terraform -chdir=./setup apply -auto-approve
-
-.PHONY: apply
-apply: ## Applies Terraform
-	terraform -chdir=./setup apply -auto-approve
-
 .PHONY: tag
 tag: ## Creates release tag 
 	git tag -s -m "release $(RELEASE_VERSION)" $(RELEASE_VERSION)
