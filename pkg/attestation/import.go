@@ -51,7 +51,7 @@ func Import(ctx context.Context, options types.Options) error {
 
 	nr := utils.NoteResource{
 		Project: fmt.Sprintf("projects/%s", opt.Project),
-		NoteID:  fmt.Sprintf("intoto_%x", sha256.Sum256([]byte(resourceURL))),
+		NoteID:  fmt.Sprintf("aactl_intoto_%x", sha256.Sum256([]byte(resourceURL))),
 	}
 
 	envs, err := provenance.GetVerifiedEnvelopes(ctx, resourceURL)
