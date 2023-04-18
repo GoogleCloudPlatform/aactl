@@ -166,7 +166,6 @@ func createOrUpdateOccurrence(ctx context.Context, p string, o *g.Occurrence, c 
 	}
 
 	switch len(listRes) {
-
 	// If there were no occurrences, we create the occurrence.
 	case 0:
 		req := &g.CreateOccurrenceRequest{
