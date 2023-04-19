@@ -25,6 +25,7 @@ import (
 	"github.com/GoogleCloudPlatform/aactl/pkg/vul/convert"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"google.golang.org/api/iterator"
 	g "google.golang.org/genproto/googleapis/grafeas/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -131,25 +132,62 @@ func postNoteOccurrences(ctx context.Context, projectID string, noteID string, n
 		}
 	}
 
-	// Create Occurrences
+	// Create/Update Occurrences
 	for _, o := range nocc.Occurrences {
-		o.NoteName = noteName
+		if err := createOrUpdateOccurrence(ctx, p, o, c); err != nil {
+			return errors.Wrap(err, "unable to create or update occurrence")
+		}
+	}
+
+	return nil
+}
+
+func createOrUpdateOccurrence(ctx context.Context, p string, o *g.Occurrence, c *ca.Client) error {
+	// List occurrences and see if occurrence already exists, update it else
+	// create one.
+	listReq := &g.ListOccurrencesRequest{
+		Parent:   p,
+		Filter:   fmt.Sprintf("noteId=\"%s\" AND resourceURL=\"%s\"", o.NoteName, o.GetResourceUri()),
+		PageSize: 10,
+	}
+
+	var listRes []*g.Occurrence
+	it := c.GetGrafeasClient().ListOccurrences(ctx, listReq)
+	for {
+		resp, err := it.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		listRes = append(listRes, resp)
+	}
+
+	switch len(listRes) {
+	// If there were no occurrences, we create the occurrence.
+	case 0:
 		req := &g.CreateOccurrenceRequest{
 			Parent:     p,
 			Occurrence: o,
 		}
 		_, err := c.GetGrafeasClient().CreateOccurrence(ctx, req)
 		if err != nil {
-			// If occurrence already exists, skip
-			if status.Code(err) == codes.AlreadyExists {
-				log.Debug().Msgf("already exists: occurrence %s-%s",
-					o.GetVulnerability().PackageIssue[0].AffectedPackage,
-					o.GetVulnerability().PackageIssue[0].AffectedVersion.Name)
-			} else {
-				return errors.Wrap(err, "error posting occurrence")
-			}
+			return errors.Wrap(err, "error posting occurrence")
 		}
+	// If there was one occurrence, we update it.
+	case 1:
+		updateReq := &g.UpdateOccurrenceRequest{
+			Name:       listRes[0].GetName(),
+			Occurrence: o,
+		}
+		if _, err := c.GetGrafeasClient().UpdateOccurrence(ctx, updateReq); err != nil {
+			return errors.Wrap(err, "error updating occurrence")
+		}
+	default:
+		return errors.New("list occurrence expected to return one " +
+			"occurrence but more than one was returned")
 	}
-
 	return nil
 }

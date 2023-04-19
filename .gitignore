@@ -20,6 +20,7 @@ cosign.*
 
 # IDEs
 .idea/*
+aactl.iml
 .vscode/*
 
 # Local .terraform directories

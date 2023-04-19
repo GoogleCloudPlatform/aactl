@@ -76,7 +76,7 @@ func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 
 	// create note
 	n := g.Note{
-		Name:             cve,
+		Name:             fmt.Sprintf("%s-%s", cve, "aactl"),
 		ShortDescription: cve,
 		LongDescription:  utils.ToString(v.Search("CVSSv3").Data()),
 		RelatedUrl: []*g.RelatedUrl{

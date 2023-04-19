@@ -70,7 +70,7 @@ func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 	nvd := v.Search("CVSS", "nvd")
 
 	n := g.Note{
-		Name:             cve,
+		Name:             fmt.Sprintf("%s-%s", cve, "aactl"),
 		ShortDescription: cve,
 		RelatedUrl: []*g.RelatedUrl{
 			{
