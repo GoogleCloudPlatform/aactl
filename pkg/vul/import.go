@@ -95,22 +95,6 @@ func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.Vulnera
 	return nil
 }
 
-func post2(ctx context.Context, list types.NoteOccurrencesMap, opt *types.VulnerabilityOptions) error {
-	if list == nil {
-		return errors.New("expected non-nil result")
-	}
-
-	for noteID, nocc := range list {
-		if err := postNoteOccurrences(ctx, opt.Project, noteID, nocc); err != nil {
-			log.Error().Err(err).Msg("error posting notes & occurrences")
-
-		}
-
-	}
-
-	return nil
-}
-
 // postNoteOccurrences creates new Notes and its associated Occurrences.
 // Notes will be created only if it does not exist.
 func postNoteOccurrences(ctx context.Context, projectID string, noteID string, nocc types.NoteOccurrences) error {
