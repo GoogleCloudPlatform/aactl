@@ -29,7 +29,7 @@ func TestGrypeConverter(t *testing.T) {
 		File:    "../../../../examples/data/grype.json",
 		Format:  types.SourceFormatGrypeJSON,
 	}
-	s, err := utils.NewFileSource(opt.File, opt.Source)
+	s, err := utils.NewFileSource(opt.Project, opt.File, opt.Source)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 
