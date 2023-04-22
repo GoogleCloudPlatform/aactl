@@ -29,7 +29,7 @@ func TestSnykConverter(t *testing.T) {
 		File:    "../../../../examples/data/snyk.json",
 		Format:  types.SourceFormatSnykJSON,
 	}
-	s, err := utils.NewFileSource(opt.File, opt.Source)
+	s, err := utils.NewFileSource(opt.Project, opt.File, opt.Source)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 

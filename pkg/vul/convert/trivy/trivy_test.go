@@ -29,7 +29,7 @@ func TestTrivyConverter(t *testing.T) {
 		File:    "../../../../examples/data/trivy.json",
 		Format:  types.SourceFormatSnykJSON,
 	}
-	s, err := utils.NewFileSource(opt.File, opt.Source)
+	s, err := utils.NewFileSource(opt.Project, opt.File, opt.Source)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 

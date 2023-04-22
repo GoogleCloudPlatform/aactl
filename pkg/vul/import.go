@@ -39,7 +39,7 @@ func Import(ctx context.Context, options types.Options) error {
 	if err := options.Validate(); err != nil {
 		return errors.Wrap(err, "error validating options")
 	}
-	s, err := utils.NewFileSource(opt.File, opt.Source)
+	s, err := utils.NewFileSource(opt.Project, opt.File, opt.Source)
 	if err != nil {
 		return errors.Wrap(err, "error creating source")
 	}
@@ -84,7 +84,7 @@ func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.Vulnera
 			}
 
 			if err := postNoteOccurrences(ctx, opt.Project, noteID, nocc); err != nil {
-				log.Error().Err(err).Msg("error posting notes")
+				log.Error().Err(err).Msg("error posting notes & occurrences")
 				cancel()
 			}
 		}(noteID, nocc)
@@ -134,20 +134,21 @@ func postNoteOccurrences(ctx context.Context, projectID string, noteID string, n
 
 	// Create/Update Occurrences
 	for _, o := range nocc.Occurrences {
-		if err := createOrUpdateOccurrence(ctx, p, o, c); err != nil {
+		if err := createOrUpdateOccurrence(ctx, p, noteID, o, c); err != nil {
 			return errors.Wrap(err, "unable to create or update occurrence")
 		}
+		// TODO: PackageIssues should be merged
+		break
 	}
 
 	return nil
 }
 
-func createOrUpdateOccurrence(ctx context.Context, p string, o *g.Occurrence, c *ca.Client) error {
-	// List occurrences and see if occurrence already exists, update it else
-	// create one.
+func createOrUpdateOccurrence(ctx context.Context, p string, noteID string, o *g.Occurrence, c *ca.Client) error {
+	// Create occurrence. If already exists, update.
 	listReq := &g.ListOccurrencesRequest{
 		Parent:   p,
-		Filter:   fmt.Sprintf("noteId=\"%s\" AND resourceURL=\"%s\"", o.NoteName, o.GetResourceUri()),
+		Filter:   fmt.Sprintf("noteId=\"%s\" AND resource_url=\"%s\"", noteID, o.GetResourceUri()),
 		PageSize: 10,
 	}
 

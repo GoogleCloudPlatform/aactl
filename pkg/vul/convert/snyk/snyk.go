@@ -38,6 +38,7 @@ func Convert(s *utils.Source) (types.NoteOccurrencesMap, error) {
 
 	for _, v := range s.Data.Search("vulnerabilities").Children() {
 		cve := v.Search("identifiers", "CVE").Index(0).Data().(string)
+		noteID := utils.GetPrefixNoteName(cve)
 
 		// create note
 		n := convertNote(s, v)
@@ -48,13 +49,13 @@ func Convert(s *utils.Source) (types.NoteOccurrencesMap, error) {
 		}
 
 		// If cve is not found, add to map
-		if _, ok := list[cve]; !ok {
-			list[cve] = types.NoteOccurrences{Note: n}
+		if _, ok := list[noteID]; !ok {
+			list[noteID] = types.NoteOccurrences{Note: n}
 		}
-		nocc := list[cve]
+		nocc := list[noteID]
 		occ := convertOccurrence(s, v, n.Name)
 		nocc.Occurrences = append(nocc.Occurrences, occ)
-		list[cve] = nocc
+		list[noteID] = nocc
 	}
 
 	return list, nil
@@ -62,6 +63,7 @@ func Convert(s *utils.Source) (types.NoteOccurrencesMap, error) {
 
 func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 	cve := v.Search("identifiers", "CVE").Index(0).Data().(string)
+	noteID := utils.GetPrefixNoteName(cve)
 
 	// Get cvss3 details from NVD
 	var cvss3 *gabs.Container
@@ -76,7 +78,7 @@ func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 
 	// create note
 	n := g.Note{
-		Name:             fmt.Sprintf("%s-%s", cve, "aactl"),
+		Name:             noteID,
 		ShortDescription: cve,
 		LongDescription:  utils.ToString(v.Search("CVSSv3").Data()),
 		RelatedUrl: []*g.RelatedUrl{
@@ -121,8 +123,9 @@ func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 	return &n
 }
 
-func convertOccurrence(s *utils.Source, v *gabs.Container, noteName string) *g.Occurrence {
+func convertOccurrence(s *utils.Source, v *gabs.Container, noteID string) *g.Occurrence {
 	cve := v.Search("identifiers", "CVE").Index(0).Data().(string)
+	noteName := fmt.Sprintf("projects/%s/notes/%s", s.Project, noteID)
 
 	// Get cvss3 details from NVD
 	var cvss3 *gabs.Container
