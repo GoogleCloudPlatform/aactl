@@ -36,7 +36,6 @@ var (
 )
 
 func attestationCmd(c *c.Context) error {
-
 	uri, err := utils.ResolveImageURI(c.Context, c.String(sourceFlag.Name))
 	if err != nil {
 		return errors.Wrap(err, "error resolving source name to URI")

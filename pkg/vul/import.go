@@ -137,8 +137,6 @@ func postNoteOccurrences(ctx context.Context, projectID string, noteID string, n
 		if err := createOrUpdateOccurrence(ctx, p, noteID, o, c); err != nil {
 			return errors.Wrap(err, "unable to create or update occurrence")
 		}
-		// TODO: PackageIssues should be merged
-		break
 	}
 
 	return nil
