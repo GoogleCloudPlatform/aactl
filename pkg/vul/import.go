@@ -20,7 +20,6 @@ import (
 	"sync"
 
 	ca "cloud.google.com/go/containeranalysis/apiv1"
-	"github.com/GoogleCloudPlatform/aactl/pkg/container"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
 	"github.com/GoogleCloudPlatform/aactl/pkg/vul/convert"
@@ -49,14 +48,6 @@ func Import(ctx context.Context, options types.Options) error {
 	if err != nil {
 		return errors.Wrap(err, "error getting converter")
 	}
-
-	resourceURL, err := container.GetFullURL(opt.Source)
-	if err != nil {
-		return errors.Wrap(err, "error getting full url")
-	}
-	log.Info().Msgf("Resource URL: %s", resourceURL)
-
-	s.URI = resourceURL
 
 	noteOccurrencesMap, err := converter(s)
 	if err != nil {
@@ -147,7 +138,7 @@ func postNoteOccurrences(ctx context.Context, projectID string, noteID string, n
 			return errors.Wrap(err, "unable to create or update occurrence")
 		}
 		// TODO: PackageIssues should be merged
-		break // no-lint
+		break // nolint
 	}
 
 	return nil

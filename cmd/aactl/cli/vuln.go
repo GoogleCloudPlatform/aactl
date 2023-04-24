@@ -15,9 +15,11 @@
 package cli
 
 import (
+	"github.com/GoogleCloudPlatform/aactl/pkg/container"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/GoogleCloudPlatform/aactl/pkg/vul"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	c "github.com/urfave/cli/v2"
 )
 
@@ -51,6 +53,13 @@ func vulnerabilityCmd(c *c.Context) error {
 	}
 
 	printVersion(c)
+
+	resourceURL, err := container.GetFullURL(opt.Source)
+	if err != nil {
+		return errors.Wrap(err, "error getting full url")
+	}
+	log.Info().Msgf("Resource URL: %s", resourceURL)
+	opt.Source = resourceURL
 
 	if err := vul.Import(c.Context, opt); err != nil {
 		return errors.Wrap(err, "error executing command")
