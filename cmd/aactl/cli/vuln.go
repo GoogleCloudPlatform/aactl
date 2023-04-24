@@ -16,6 +16,7 @@ package cli
 
 import (
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
+	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
 	"github.com/GoogleCloudPlatform/aactl/pkg/vul"
 	"github.com/pkg/errors"
 	c "github.com/urfave/cli/v2"
@@ -42,9 +43,14 @@ func vulnerabilityCmd(c *c.Context) error {
 		return errors.Wrap(err, "error parsing source format")
 	}
 
+	uri, err := utils.ResolveImageURI(c.Context, c.String(sourceFlag.Name))
+	if err != nil {
+		return errors.Wrap(err, "error resolving source name to URI")
+	}
+
 	opt := &types.VulnerabilityOptions{
 		Project: c.String(projectFlag.Name),
-		Source:  c.String(sourceFlag.Name),
+		Source:  uri,
 		File:    c.String(fileFlag.Name),
 		Format:  f,
 		Quiet:   isQuiet(c),

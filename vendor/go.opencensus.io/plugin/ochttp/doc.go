@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2018, OpenCensus Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package types
-
-import "errors"
-
-var (
-	ErrorNotSupported        = errors.New("not supported")
-	ErrMissingRequiredFields = errors.New("missing required fields")
-	ErrMissingProject        = errors.New("missing project")
-	ErrMissingFormat         = errors.New("missing format")
-	ErrMissingPath           = errors.New("missing path")
-	ErrMissingSource         = errors.New("missing source")
-	ErrInvalidSource         = errors.New("invalid source")
-)
+// Package ochttp provides OpenCensus instrumentation for net/http package.
+//
+// For server instrumentation, see Handler. For client-side instrumentation,
+// see Transport.
+package ochttp // import "go.opencensus.io/plugin/ochttp"

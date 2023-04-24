@@ -3,6 +3,7 @@ module github.com/GoogleCloudPlatform/aactl
 go 1.20
 
 require (
+	cloud.google.com/go/artifactregistry v1.11.2
 	cloud.google.com/go/containeranalysis v0.9.0
 	github.com/Jeffail/gabs/v2 v2.7.0
 	github.com/google/go-containerregistry v0.14.0
@@ -27,10 +28,12 @@ exclude (
 )
 
 require (
+	cloud.google.com/go v0.110.0 // indirect
 	cloud.google.com/go/compute v1.18.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/grafeas v0.2.0 // indirect
 	cloud.google.com/go/iam v0.13.0 // indirect
+	cloud.google.com/go/longrunning v0.4.1 // indirect
 	github.com/AliyunContainerService/ack-ram-tool/pkg/credentials/alibabacloudsdkgo/helper v0.2.0 // indirect
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible // indirect
 	github.com/Azure/go-autorest v14.2.0+incompatible // indirect

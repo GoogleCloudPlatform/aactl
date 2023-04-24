@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -45,7 +46,7 @@ func Execute(version, commit, date string, args []string) error {
 
 func newApp(version, commit, date string) (*c.App, error) {
 	if version == "" || commit == "" || date == "" {
-		return nil, errors.New("version, commit, and date must be set")
+		return nil, errors.Wrap(types.ErrMissingRequiredFields, "version, commit, and date must be set")
 	}
 
 	compileTime, err := time.Parse("2006-01-02T15:04:05Z", date)

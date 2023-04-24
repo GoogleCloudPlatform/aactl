@@ -15,20 +15,23 @@
 package utils
 
 import (
+	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/Jeffail/gabs/v2"
 	"github.com/pkg/errors"
 )
 
-// NewSource returns a new Source from the given path.
+// NewFileSource returns a new Source from the given path.
 func NewFileSource(path, uri string) (*Source, error) {
 	if path == "" {
-		return nil, errors.New("file is required")
+		return nil, types.ErrMissingPath
 	}
 
 	c, err := gabs.ParseJSONFile(path)
 	if err != nil {
 		return nil, errors.Wrapf(err, "unable to parse file: %s", path)
 	}
+
+	// Check if URI has tag, if yes resolve it.
 
 	s := &Source{
 		URI:  uri,

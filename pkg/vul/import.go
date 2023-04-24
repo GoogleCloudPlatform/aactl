@@ -43,22 +43,22 @@ func Import(ctx context.Context, options types.Options) error {
 		return errors.Wrap(err, "error creating source")
 	}
 
-	c, err := convert.GetConverter(opt.Format)
+	converter, err := convert.GetConverter(opt.Format)
 	if err != nil {
 		return errors.Wrap(err, "error getting converter")
 	}
 
-	list, err := c(s)
+	noteOccurrencesMap, err := converter(s)
 	if err != nil {
 		return errors.Wrap(err, "error converting source")
 	}
 
 	// TODO: Debug code
-	//_ = deleteNoteOccurrences(ctx, opt, list)
+	//_ = deleteNoteOccurrences(ctx, opt, noteOccurrencesMap)
 
-	log.Info().Msgf("found %d vulnerabilities", len(list))
+	log.Info().Msgf("found %d vulnerabilities", len(noteOccurrencesMap))
 
-	return post(ctx, list, opt)
+	return post(ctx, noteOccurrencesMap, opt)
 }
 
 func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.VulnerabilityOptions) error {
@@ -98,7 +98,7 @@ func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.Vulnera
 // Notes will be created only if it does not exist.
 func postNoteOccurrences(ctx context.Context, projectID string, noteID string, nocc types.NoteOccurrences) error {
 	if projectID == "" {
-		return errors.New("projectID required")
+		return types.ErrMissingProject
 	}
 
 	// don't submit end-to-end test
