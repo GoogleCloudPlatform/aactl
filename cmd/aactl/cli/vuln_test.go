@@ -36,6 +36,9 @@ func TestImport(t *testing.T) {
 	for _, f := range types.GetSourceFormatNames() {
 		set = flag.NewFlagSet("", flag.ContinueOnError)
 		set.String(projectFlag.Name, types.TestProjectID, "")
+		fullResourceNameResolver = func(u string) (string, error) {
+			return "us-docker.pkg.dev/project/repo/img@sha256:f6efe...", nil
+		}
 		set.String(sourceFlag.Name, "us-docker.pkg.dev/project/repo/img@sha256:f6efe...", "")
 		set.String(fileFlag.Name, fmt.Sprintf("../../../examples/data/%s.json", f), "")
 		set.String(formatFlag.Name, f, "")

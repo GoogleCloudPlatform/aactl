@@ -38,6 +38,15 @@ var (
 	}
 )
 
+var fullResourceNameResolver = func(u string) (string, error) {
+	resourceURL, err := container.GetFullURL(u)
+	if err != nil {
+		return "", err
+	}
+	log.Info().Msgf("Resource URL: %s", resourceURL)
+	return resourceURL, err
+}
+
 func vulnerabilityCmd(c *c.Context) error {
 	f, err := types.ParseSourceFormat(c.String(formatFlag.Name))
 	if err != nil {
@@ -54,11 +63,10 @@ func vulnerabilityCmd(c *c.Context) error {
 
 	printVersion(c)
 
-	resourceURL, err := container.GetFullURL(opt.Source)
+	resourceURL, err := fullResourceNameResolver(opt.Source)
 	if err != nil {
 		return errors.Wrap(err, "error getting full url")
 	}
-	log.Info().Msgf("Resource URL: %s", resourceURL)
 	opt.Source = resourceURL
 
 	if err := vul.Import(c.Context, opt); err != nil {
