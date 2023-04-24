@@ -85,7 +85,7 @@ jobs:
     - name: Setup Go
       uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9  # v4.0.0
       with:
-        go-version: ${{ go-version-for-lint }}
+        go-version: ${{ inputs.go-version-for-lint }}
     - run: go version
     - name: Cache Go Modules
       uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8  # v3.3.1
