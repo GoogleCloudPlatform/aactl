@@ -61,7 +61,9 @@ func Convert(s *utils.Source) (types.NoteOccurrencesMap, error) {
 	return list, nil
 }
 
-func convertOccurrence(s *utils.Source, v *gabs.Container, noteName string) *g.Occurrence {
+func convertOccurrence(s *utils.Source, v *gabs.Container, noteID string) *g.Occurrence {
+	noteName := fmt.Sprintf("projects/%s/notes/%s", s.Project, noteID)
+
 	// nvd vulnerability
 	rvList := v.Search("relatedVulnerabilities").Children()
 	var rv *gabs.Container
@@ -179,7 +181,7 @@ func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 
 	// create note
 	n := g.Note{
-		Name:             cve,
+		Name:             utils.GetPrefixNoteName(cve),
 		ShortDescription: cve,
 		LongDescription:  rv.Search("description").Data().(string),
 		RelatedUrl: []*g.RelatedUrl{

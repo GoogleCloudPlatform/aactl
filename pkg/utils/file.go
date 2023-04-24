@@ -21,7 +21,7 @@ import (
 )
 
 // NewFileSource returns a new Source from the given path.
-func NewFileSource(path, uri string) (*Source, error) {
+func NewFileSource(project, path, uri string) (*Source, error) {
 	if path == "" {
 		return nil, types.ErrMissingPath
 	}
@@ -31,17 +31,19 @@ func NewFileSource(path, uri string) (*Source, error) {
 		return nil, errors.Wrapf(err, "unable to parse file: %s", path)
 	}
 
-	// Check if URI has tag, if yes resolve it.
-
 	s := &Source{
-		URI:  uri,
-		Data: c,
+		Project: project,
+		URI:     uri,
+		Data:    c,
 	}
 
 	return s, nil
 }
 
 type Source struct {
+	// Project is the associated project.
+	Project string
+
 	// URI is the image URI.
 	URI string
 

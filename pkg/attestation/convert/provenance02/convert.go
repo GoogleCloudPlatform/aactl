@@ -17,7 +17,6 @@ package provenance02
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/GoogleCloudPlatform/aactl/pkg/provenance"
 	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
@@ -35,11 +34,8 @@ func Convert(nr utils.NoteResource, resourceURL string, env *provenance.Envelope
 		return nil, nil, errors.Wrap(err, "error getting provenance")
 	}
 
-	tokens := strings.Split(nr.Name(), "/")
-	noteID := tokens[len(tokens)-1]
-
 	n := g.Note{
-		Name: noteID,
+		Name: nr.NoteID,
 		Type: &g.Note_Build{
 			Build: &g.BuildNote{
 				BuilderVersion: prov.Predicate.Builder.ID,

@@ -70,7 +70,7 @@ func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 	nvd := v.Search("CVSS", "nvd")
 
 	n := g.Note{
-		Name:             cve,
+		Name:             utils.GetPrefixNoteName(cve),
 		ShortDescription: cve,
 		RelatedUrl: []*g.RelatedUrl{
 			{
@@ -127,8 +127,9 @@ func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 }
 
 // convertOccurrence converts Trivy JSON to Grafeas Occurrence format.
-func convertOccurrence(s *utils.Source, v *gabs.Container, noteName string, packageType string) *g.Occurrence {
+func convertOccurrence(s *utils.Source, v *gabs.Container, noteID string, packageType string) *g.Occurrence {
 	cve := v.Search("VulnerabilityID").Data().(string)
+	noteName := fmt.Sprintf("projects/%s/notes/%s", s.Project, noteID)
 
 	if v.Search("CVSS", "nvd").Data() == nil {
 		return nil

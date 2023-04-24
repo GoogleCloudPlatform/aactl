@@ -41,3 +41,7 @@ func GetNoteResource(p string) (*NoteResource, error) {
 func (r *NoteResource) Name() string {
 	return fmt.Sprintf("%s/notes/%s", r.Project, r.NoteID)
 }
+
+func GetPrefixNoteName(n string) string {
+	return fmt.Sprintf("aactl-%s", n)
+}
