@@ -17,7 +17,6 @@ package cli
 import (
 	"github.com/GoogleCloudPlatform/aactl/pkg/attestation"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
-	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
 	"github.com/pkg/errors"
 	c "github.com/urfave/cli/v2"
 )
@@ -36,14 +35,9 @@ var (
 )
 
 func attestationCmd(c *c.Context) error {
-	uri, err := utils.ResolveImageURI(c.Context, c.String(sourceFlag.Name))
-	if err != nil {
-		return errors.Wrap(err, "error resolving source name to URI")
-	}
-
 	opt := &types.AttestationOptions{
 		Project: c.String(projectFlag.Name),
-		Source:  uri,
+		Source:  c.String(sourceFlag.Name),
 		Quiet:   isQuiet(c),
 	}
 
