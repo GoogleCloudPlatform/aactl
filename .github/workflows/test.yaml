@@ -96,11 +96,17 @@ jobs:
     - name: Tidy Modules
       run: |
         make tidy
+    - name: Config Go Lint
+      id: golangci_config
+      uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b  # v2.0
+      with:
+        files: .golangci.yaml
     - name: Lint Go
       if: steps.golangci_config.outputs.files_exists == 'true'
       uses: golangci/golangci-lint-action@v3  # v3
       with:
         version: ${{ inputs.golangci_version }}
+        skip-cache: true
     - name: Config YAML Lint
       id: yamllint_config
       uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b  # v2.0
