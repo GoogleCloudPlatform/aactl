@@ -30,7 +30,7 @@ on:
         description: 'golangci version to use'
         required: false
         type: string
-        default: 'v1.51'
+        default: 'v1.52.2'
     secrets:
       access_token:
         description: 'Workflow token'
