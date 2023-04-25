@@ -20,6 +20,7 @@ import (
 	"sync"
 
 	ca "cloud.google.com/go/containeranalysis/apiv1"
+	"github.com/GoogleCloudPlatform/aactl/pkg/container"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
 	"github.com/GoogleCloudPlatform/aactl/pkg/vul/convert"
@@ -39,6 +40,14 @@ func Import(ctx context.Context, options types.Options) error {
 	if err := options.Validate(); err != nil {
 		return errors.Wrap(err, "error validating options")
 	}
+
+	resourceURL, err := container.GetFullURL(opt.Source)
+	if err != nil {
+		return errors.Wrap(err, "error getting full url")
+	}
+	log.Info().Msgf("Resource URL: %s", resourceURL)
+	opt.Source = resourceURL
+
 	s, err := utils.NewFileSource(opt.Project, opt.File, opt.Source)
 	if err != nil {
 		return errors.Wrap(err, "error creating source")
