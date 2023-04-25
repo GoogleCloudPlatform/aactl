@@ -17,5 +17,11 @@ package types
 import "errors"
 
 var (
-	ErrorNotSupported = errors.New("not supported")
+	ErrorNotSupported        = errors.New("not supported")
+	ErrMissingRequiredFields = errors.New("missing required fields")
+	ErrMissingProject        = errors.New("missing project")
+	ErrMissingFormat         = errors.New("missing format")
+	ErrMissingPath           = errors.New("missing path")
+	ErrMissingSource         = errors.New("missing source")
+	ErrInvalidSource         = errors.New("invalid source")
 )

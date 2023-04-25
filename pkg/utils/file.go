@@ -15,14 +15,15 @@
 package utils
 
 import (
+	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/Jeffail/gabs/v2"
 	"github.com/pkg/errors"
 )
 
-// NewSource returns a new Source from the given path.
+// NewFileSource returns a new Source from the given path.
 func NewFileSource(project, path, uri string) (*Source, error) {
 	if path == "" {
-		return nil, errors.New("file is required")
+		return nil, types.ErrMissingPath
 	}
 
 	c, err := gabs.ParseJSONFile(path)

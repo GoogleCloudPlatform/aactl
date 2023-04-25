@@ -20,6 +20,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/GoogleCloudPlatform/aactl/pkg/container"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/urfave/cli/v2"
@@ -36,6 +37,9 @@ func TestImport(t *testing.T) {
 	for _, f := range types.GetSourceFormatNames() {
 		set = flag.NewFlagSet("", flag.ContinueOnError)
 		set.String(projectFlag.Name, types.TestProjectID, "")
+		container.GetFullURL = func(u string) (string, error) {
+			return "us-docker.pkg.dev/project/repo/img@sha256:f6efe...", nil
+		}
 		set.String(sourceFlag.Name, "us-docker.pkg.dev/project/repo/img@sha256:f6efe...", "")
 		set.String(fileFlag.Name, fmt.Sprintf("../../../examples/data/%s.json", f), "")
 		set.String(formatFlag.Name, f, "")

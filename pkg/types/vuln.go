@@ -24,14 +24,6 @@ const (
 	TestProjectID = "test"
 )
 
-var (
-	ErrMissingProject = errors.New("missing project")
-	ErrMissingFormat  = errors.New("missing format")
-	ErrMissingPath    = errors.New("missing path")
-	ErrMissingSource  = errors.New("missing source")
-	ErrInvalidSource  = errors.New("invalid source")
-)
-
 type VulnerabilityOptions struct {
 	// Project is the ID of the project to import the report into.
 	Project string

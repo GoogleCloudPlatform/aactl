@@ -27,7 +27,7 @@ import (
 // Convert converts Trivy JSON to Grafeas Note/Occurrence format.
 func Convert(s *utils.Source) (types.NoteOccurrencesMap, error) {
 	if s == nil || s.Data == nil {
-		return nil, errors.New("valid source required")
+		return nil, types.ErrInvalidSource
 	}
 
 	if !s.Data.Search("Results").Exists() {

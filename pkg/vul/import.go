@@ -20,6 +20,7 @@ import (
 	"sync"
 
 	ca "cloud.google.com/go/containeranalysis/apiv1"
+	"github.com/GoogleCloudPlatform/aactl/pkg/container"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
 	"github.com/GoogleCloudPlatform/aactl/pkg/vul/convert"
@@ -39,27 +40,35 @@ func Import(ctx context.Context, options types.Options) error {
 	if err := options.Validate(); err != nil {
 		return errors.Wrap(err, "error validating options")
 	}
+
+	resourceURL, err := container.GetFullURL(opt.Source)
+	if err != nil {
+		return errors.Wrap(err, "error getting full url")
+	}
+	log.Info().Msgf("Resource URL: %s", resourceURL)
+	opt.Source = resourceURL
+
 	s, err := utils.NewFileSource(opt.Project, opt.File, opt.Source)
 	if err != nil {
 		return errors.Wrap(err, "error creating source")
 	}
 
-	c, err := convert.GetConverter(opt.Format)
+	converter, err := convert.GetConverter(opt.Format)
 	if err != nil {
 		return errors.Wrap(err, "error getting converter")
 	}
 
-	list, err := c(s)
+	noteOccurrencesMap, err := converter(s)
 	if err != nil {
 		return errors.Wrap(err, "error converting source")
 	}
 
 	// TODO: Debug code
-	//_ = deleteNoteOccurrences(ctx, opt, list)
+	//_ = deleteNoteOccurrences(ctx, opt, noteOccurrencesMap)
 
-	log.Info().Msgf("found %d vulnerabilities", len(list))
+	log.Info().Msgf("found %d vulnerabilities", len(noteOccurrencesMap))
 
-	return post(ctx, list, opt)
+	return post(ctx, noteOccurrencesMap, opt)
 }
 
 func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.VulnerabilityOptions) error {
@@ -99,7 +108,7 @@ func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.Vulnera
 // Notes will be created only if it does not exist.
 func postNoteOccurrences(ctx context.Context, projectID string, noteID string, nocc types.NoteOccurrences) error {
 	if projectID == "" {
-		return errors.New("projectID required")
+		return types.ErrMissingProject
 	}
 
 	// don't submit end-to-end test
@@ -138,7 +147,7 @@ func postNoteOccurrences(ctx context.Context, projectID string, noteID string, n
 			return errors.Wrap(err, "unable to create or update occurrence")
 		}
 		// TODO: PackageIssues should be merged
-		break
+		break // nolint
 	}
 
 	return nil
