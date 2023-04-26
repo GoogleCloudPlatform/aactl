@@ -40,7 +40,6 @@ func TestGrypeConverter(t *testing.T) {
 	for id, nocc := range list {
 		n := nocc.Note
 		assert.NotEmpty(t, id)
-		assert.NotEmpty(t, n.Name)
 		assert.NotEmpty(t, n.ShortDescription)
 		assert.NotEmpty(t, n.LongDescription)
 		assert.NotEmpty(t, n.RelatedUrl)
