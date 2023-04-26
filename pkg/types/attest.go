@@ -16,6 +16,7 @@ package types
 
 import (
 	"net/url"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -48,7 +49,8 @@ func (o *AttestationOptions) Validate() error {
 		return errors.Wrap(ErrInvalidSource, err.Error())
 	}
 	u.Scheme = ""
-	o.Source = u.String()
+	uri, _ := strings.CutPrefix(u.String(), "//")
+	o.Source = uri
 
 	return nil
 }
