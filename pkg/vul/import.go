@@ -68,7 +68,12 @@ func Import(ctx context.Context, options types.Options) error {
 
 	log.Info().Msgf("found %d vulnerabilities", len(noteOccurrencesMap))
 
-	return post(ctx, noteOccurrencesMap, opt)
+	if err := post(ctx, noteOccurrencesMap, opt); err != nil {
+		return err
+	}
+
+	// Create/Update discovery occurrence.
+	return updateDiscoveryNoteAndOcc(ctx, opt.Project, opt.Source)
 }
 
 func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.VulnerabilityOptions) error {
