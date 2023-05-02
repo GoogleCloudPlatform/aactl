@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	ca "cloud.google.com/go/containeranalysis/apiv1"
 	"github.com/GoogleCloudPlatform/aactl/pkg/container"
@@ -30,6 +31,7 @@ import (
 	g "google.golang.org/genproto/googleapis/grafeas/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func Import(ctx context.Context, options types.Options) error {
@@ -68,7 +70,117 @@ func Import(ctx context.Context, options types.Options) error {
 
 	log.Info().Msgf("found %d vulnerabilities", len(noteOccurrencesMap))
 
-	return post(ctx, noteOccurrencesMap, opt)
+	if err := post(ctx, noteOccurrencesMap, opt); err != nil {
+		return err
+	}
+
+	// Create/Update discovery occurrence.
+	if err := updateDiscoveryNoteAndOcc(ctx, opt.Project, opt.Source); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func updateDiscoveryNoteAndOcc(ctx context.Context, projectID string, resourceUrl string) error {
+	if projectID == "" {
+		return types.ErrMissingProject
+	}
+
+	// don't submit end-to-end test
+	if projectID == types.TestProjectID {
+		return nil
+	}
+
+	c, err := ca.NewClient(ctx)
+	if err != nil {
+		return errors.Wrap(err, "error creating client")
+	}
+	defer c.Close()
+
+	p := fmt.Sprintf("projects/%s", projectID)
+	discoveryNoteID := "aatcl-scanner"
+	// Create Note
+	req := &g.CreateNoteRequest{
+		Parent: p,
+		NoteId: discoveryNoteID,
+		Note: &g.Note{
+			ShortDescription: "aactl discovery note",
+			Kind:             g.NoteKind_DISCOVERY,
+			Type: &g.Note_Discovery{
+				Discovery: &g.DiscoveryNote{AnalysisKind: g.NoteKind_DISCOVERY},
+			},
+		},
+	}
+	noteName := fmt.Sprintf("%s/notes/%s", p, discoveryNoteID)
+	_, err = c.GetGrafeasClient().CreateNote(ctx, req)
+	if err != nil {
+		// If note already exists, skip
+		if status.Code(err) == codes.AlreadyExists {
+			log.Debug().Msgf("already exists: %s", noteName)
+		} else {
+			return errors.Wrap(err, "error creating discovery note")
+		}
+	}
+
+	occ := &g.Occurrence{
+		Kind:        g.NoteKind_DISCOVERY,
+		ResourceUri: resourceUrl,
+		NoteName:    noteName,
+		Details: &g.Occurrence_Discovery{
+			Discovery: &g.DiscoveryOccurrence{
+				ContinuousAnalysis: g.DiscoveryOccurrence_INACTIVE,
+				AnalysisStatus:     g.DiscoveryOccurrence_COMPLETE,
+				LastScanTime:       timestamppb.New(time.Now()),
+			},
+		},
+	}
+
+	listOccReq := &g.ListOccurrencesRequest{
+		Parent: p,
+		Filter: fmt.Sprintf("resourceUrl=\"%s\" AND kind=\"DISCOVERY\" AND noteId=\"%s\"", resourceUrl, discoveryNoteID),
+	}
+
+	var listRes []*g.Occurrence
+	it := c.GetGrafeasClient().ListOccurrences(ctx, listOccReq)
+	for {
+		resp, err := it.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		if err != nil {
+			return err
+		}
+
+		listRes = append(listRes, resp)
+	}
+
+	switch len(listRes) {
+	// If there were no occurrences, we create the occurrence.
+	case 0:
+		req := &g.CreateOccurrenceRequest{
+			Parent:     p,
+			Occurrence: occ,
+		}
+		_, err := c.GetGrafeasClient().CreateOccurrence(ctx, req)
+		if err != nil {
+			return errors.Wrap(err, "error posting discovery occurrence")
+		}
+	// If there was one occurrence, we update it.
+	case 1:
+		updateReq := &g.UpdateOccurrenceRequest{
+			Name:       listRes[0].GetName(),
+			Occurrence: occ,
+		}
+		if _, err := c.GetGrafeasClient().UpdateOccurrence(ctx, updateReq); err != nil {
+			return errors.Wrap(err, "error updating occurrence")
+		}
+	default:
+		return errors.New("list occurrence expected to return one " +
+			"occurrence but more than one was returned")
+	}
+
+	return nil
 }
 
 func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.VulnerabilityOptions) error {
