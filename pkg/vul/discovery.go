@@ -69,9 +69,10 @@ func updateDiscoveryNote(ctx context.Context, parent string, discoveryNoteID str
 
 func updateDiscoveryOcc(ctx context.Context, parent string, discoveryNoteID string, resourceURL string, c *ca.Client) error {
 	noteName := fmt.Sprintf("%s/notes/%s", parent, discoveryNoteID)
+	resourceURL = fmt.Sprintf("https://%s", resourceURL)
 	occ := &g.Occurrence{
 		Kind:        g.NoteKind_DISCOVERY,
-		ResourceUri: fmt.Sprintf("https://%s", resourceURL),
+		ResourceUri: resourceURL,
 		NoteName:    noteName,
 		Details: &g.Occurrence_Discovery{
 			Discovery: &g.DiscoveryOccurrence{
