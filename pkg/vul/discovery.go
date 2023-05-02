@@ -84,7 +84,7 @@ func updateDiscoveryOcc(ctx context.Context, parent string, discoveryNoteID stri
 
 	listOccReq := &g.ListOccurrencesRequest{
 		Parent: parent,
-		Filter: fmt.Sprintf("resourceUrl=\"%s\" AND kind=\"DISCOVERY\" AND noteId=\"%s\"", resourceURL, discoveryNoteID),
+		Filter: fmt.Sprintf("resourceUrl=\"https://%s\" AND kind=\"DISCOVERY\" AND noteId=\"%s\"", resourceURL, discoveryNoteID),
 	}
 
 	var listRes []*g.Occurrence
