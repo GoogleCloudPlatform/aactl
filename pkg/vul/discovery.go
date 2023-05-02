@@ -71,7 +71,7 @@ func updateDiscoveryOcc(ctx context.Context, parent string, discoveryNoteID stri
 	noteName := fmt.Sprintf("%s/notes/%s", parent, discoveryNoteID)
 	occ := &g.Occurrence{
 		Kind:        g.NoteKind_DISCOVERY,
-		ResourceUri: resourceURL,
+		ResourceUri: fmt.Sprintf("https://%s", resourceURL),
 		NoteName:    noteName,
 		Details: &g.Occurrence_Discovery{
 			Discovery: &g.DiscoveryOccurrence{
