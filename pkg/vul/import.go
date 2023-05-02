@@ -75,14 +75,10 @@ func Import(ctx context.Context, options types.Options) error {
 	}
 
 	// Create/Update discovery occurrence.
-	if err := updateDiscoveryNoteAndOcc(ctx, opt.Project, opt.Source); err != nil {
-		return err
-	}
-
-	return nil
+	return updateDiscoveryNoteAndOcc(ctx, opt.Project, opt.Source)
 }
 
-func updateDiscoveryNoteAndOcc(ctx context.Context, projectID string, resourceUrl string) error {
+func updateDiscoveryNoteAndOcc(ctx context.Context, projectID string, resourceURL string) error {
 	if projectID == "" {
 		return types.ErrMissingProject
 	}
@@ -125,7 +121,7 @@ func updateDiscoveryNoteAndOcc(ctx context.Context, projectID string, resourceUr
 
 	occ := &g.Occurrence{
 		Kind:        g.NoteKind_DISCOVERY,
-		ResourceUri: resourceUrl,
+		ResourceUri: resourceURL,
 		NoteName:    noteName,
 		Details: &g.Occurrence_Discovery{
 			Discovery: &g.DiscoveryOccurrence{
@@ -138,7 +134,7 @@ func updateDiscoveryNoteAndOcc(ctx context.Context, projectID string, resourceUr
 
 	listOccReq := &g.ListOccurrencesRequest{
 		Parent: p,
-		Filter: fmt.Sprintf("resourceUrl=\"%s\" AND kind=\"DISCOVERY\" AND noteId=\"%s\"", resourceUrl, discoveryNoteID),
+		Filter: fmt.Sprintf("resourceUrl=\"%s\" AND kind=\"DISCOVERY\" AND noteId=\"%s\"", resourceURL, discoveryNoteID),
 	}
 
 	var listRes []*g.Occurrence
