@@ -31,22 +31,15 @@ var (
 			projectFlag,
 			sourceFlag,
 			fileFlag,
-			formatFlag,
 		},
 	}
 )
 
 func vulnerabilityCmd(c *c.Context) error {
-	f, err := types.ParseSourceFormat(c.String(formatFlag.Name))
-	if err != nil {
-		return errors.Wrap(err, "error parsing source format")
-	}
-
 	opt := &types.VulnerabilityOptions{
 		Project: c.String(projectFlag.Name),
 		Source:  c.String(sourceFlag.Name),
 		File:    c.String(fileFlag.Name),
-		Format:  f,
 		Quiet:   isQuiet(c),
 	}
 

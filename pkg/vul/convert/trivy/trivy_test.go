@@ -27,7 +27,6 @@ func TestTrivyConverter(t *testing.T) {
 		Project: types.TestProjectID,
 		Source:  "us-docker.pkg.dev/project/repo/img@sha256:f6efe...",
 		File:    "../../../../examples/data/trivy.json",
-		Format:  types.SourceFormatSnykJSON,
 	}
 	s, err := utils.NewFileSource(opt.Project, opt.File, opt.Source)
 	assert.NoError(t, err)

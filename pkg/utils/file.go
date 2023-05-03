@@ -31,10 +31,16 @@ func NewFileSource(project, path, uri string) (*Source, error) {
 		return nil, errors.Wrapf(err, "unable to parse file: %s", path)
 	}
 
+	f := discoverFormat(c)
+	if f == types.SourceFormatUnknown {
+		return nil, types.ErrInvalidFormat
+	}
+
 	s := &Source{
 		Project: project,
 		URI:     uri,
 		Data:    c,
+		Format:  f,
 	}
 
 	return s, nil
@@ -47,6 +53,33 @@ type Source struct {
 	// URI is the image URI.
 	URI string
 
+	// Format of the file to import.
+	Format types.SourceFormat
+
 	// Data is the source data.
 	Data *gabs.Container
+}
+
+func discoverFormat(c *gabs.Container) types.SourceFormat {
+	if c == nil {
+		return types.SourceFormatUnknown
+	}
+
+	// grype
+	d := c.Search("descriptor", "name")
+	if d.Exists() && d.Data() != nil && d.Data().(string) == "grype" {
+		return types.SourceFormatGrypeJSON
+	}
+
+	// trivy
+	if c.ExistsP("SchemaVersion") && c.ExistsP("Results") {
+		return types.SourceFormatTrivyJSON
+	}
+
+	// snyk
+	if c.Search("vulnerabilities").Exists() && c.Search("applications").Exists() {
+		return types.SourceFormatSnykJSON
+	}
+
+	return types.SourceFormatUnknown
 }

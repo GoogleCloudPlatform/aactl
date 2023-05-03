@@ -27,7 +27,6 @@ func TestGrypeConverter(t *testing.T) {
 		Project: types.TestProjectID,
 		Source:  "us-docker.pkg.dev/project/repo/img@sha256:f6efe...",
 		File:    "../../../../examples/data/grype.json",
-		Format:  types.SourceFormatGrypeJSON,
 	}
 	s, err := utils.NewFileSource(opt.Project, opt.File, opt.Source)
 	assert.NoError(t, err)

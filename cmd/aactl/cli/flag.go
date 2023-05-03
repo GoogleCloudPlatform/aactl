@@ -15,10 +15,6 @@
 package cli
 
 import (
-	"fmt"
-	"strings"
-
-	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	c "github.com/urfave/cli/v2"
 )
 
@@ -39,11 +35,5 @@ var (
 		Name:    "file",
 		Aliases: []string{"f"},
 		Usage:   "path to vulnerability report to import",
-	}
-
-	formatFlag = &c.StringFlag{
-		Name:    "format",
-		Aliases: []string{"t"},
-		Usage:   fmt.Sprintf("file type (e.g. %s, etc.)", strings.Join(types.GetSourceFormatNames(), ", ")),
 	}
 )
