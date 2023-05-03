@@ -45,16 +45,16 @@ func Convert(s *utils.Source) (types.NoteOccurrencesMap, error) {
 			if n == nil || n.GetVulnerability().CvssScore == 0 {
 				continue
 			}
-			noteName := n.Name
+			noteID := utils.GetPrefixNoteName(n.GetShortDescription())
 
 			// If cve is not found, add to map
-			if _, ok := list[noteName]; !ok {
-				list[noteName] = types.NoteOccurrences{Note: n}
+			if _, ok := list[noteID]; !ok {
+				list[noteID] = types.NoteOccurrences{Note: n}
 			}
-			nocc := list[noteName]
-			occ := convertOccurrence(s, v, n.Name, getPackageType(r))
+			nocc := list[noteID]
+			occ := convertOccurrence(s, v, noteID, getPackageType(r))
 			nocc.Occurrences = append(nocc.Occurrences, occ)
-			list[noteName] = nocc
+			list[noteID] = nocc
 		}
 	}
 
@@ -70,7 +70,6 @@ func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 	nvd := v.Search("CVSS", "nvd")
 
 	n := g.Note{
-		Name:             utils.GetPrefixNoteName(cve),
 		ShortDescription: cve,
 		RelatedUrl: []*g.RelatedUrl{
 			{
