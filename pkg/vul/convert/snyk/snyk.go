@@ -53,7 +53,7 @@ func Convert(s *utils.Source) (types.NoteOccurrencesMap, error) {
 			list[noteID] = types.NoteOccurrences{Note: n}
 		}
 		nocc := list[noteID]
-		occ := convertOccurrence(s, v, n.Name)
+		occ := convertOccurrence(s, v, noteID)
 		nocc.Occurrences = append(nocc.Occurrences, occ)
 		list[noteID] = nocc
 	}
@@ -63,7 +63,6 @@ func Convert(s *utils.Source) (types.NoteOccurrencesMap, error) {
 
 func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 	cve := v.Search("identifiers", "CVE").Index(0).Data().(string)
-	noteID := utils.GetPrefixNoteName(cve)
 
 	// Get cvss3 details from NVD
 	var cvss3 *gabs.Container
@@ -78,7 +77,6 @@ func convertNote(s *utils.Source, v *gabs.Container) *g.Note {
 
 	// create note
 	n := g.Note{
-		Name:             noteID,
 		ShortDescription: cve,
 		LongDescription:  utils.ToString(v.Search("CVSSv3").Data()),
 		RelatedUrl: []*g.RelatedUrl{

@@ -68,7 +68,12 @@ func Import(ctx context.Context, options types.Options) error {
 
 	log.Info().Msgf("found %d vulnerabilities", len(noteOccurrencesMap))
 
-	return post(ctx, noteOccurrencesMap, opt)
+	if err := post(ctx, noteOccurrencesMap, opt); err != nil {
+		return err
+	}
+
+	// Create/Update discovery occurrence.
+	return updateDiscoveryNoteAndOcc(ctx, opt.Project, opt.Source)
 }
 
 func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.VulnerabilityOptions) error {
@@ -141,16 +146,32 @@ func postNoteOccurrences(ctx context.Context, projectID string, noteID string, n
 		}
 	}
 
-	// Create/Update Occurrences
-	for _, o := range nocc.Occurrences {
-		if err := createOrUpdateOccurrence(ctx, p, noteID, o, c); err != nil {
-			return errors.Wrap(err, "unable to create or update occurrence")
-		}
-		// TODO: PackageIssues should be merged
-		break // nolint
+	mergedOcc := mergeOccurrences(nocc.Occurrences)
+	if err := createOrUpdateOccurrence(ctx, p, noteID, mergedOcc, c); err != nil {
+		return errors.Wrap(err, "unable to create or update occurrence")
 	}
 
 	return nil
+}
+
+func mergeOccurrences(occurrences []*g.Occurrence) *g.Occurrence {
+	if len(occurrences) == 0 {
+		return nil
+	}
+	if len(occurrences) == 1 {
+		return occurrences[0]
+	}
+
+	// Take the first one as parent and only take the PackageIssue from the others
+	// This assumes that all other information in the occ is the same.
+	parent := occurrences[0]
+
+	for i := 1; i < len(occurrences); i++ {
+		packageIssues := occurrences[i].GetVulnerability().GetPackageIssue()
+		parent.GetVulnerability().PackageIssue = append(parent.GetVulnerability().PackageIssue, packageIssues...)
+	}
+
+	return parent
 }
 
 func createOrUpdateOccurrence(ctx context.Context, p string, noteID string, o *g.Occurrence, c *ca.Client) error {
