@@ -10,8 +10,7 @@ snyk container test --app-vulns \
 
 bin/aactl --debug vulnerability --project cloudy-labz \
                                 --source $digest \
-                                --file report.json \
-                                --format snyk
+                                --file report.json
 
 gcloud artifacts docker images describe $digest \
     --project $project \

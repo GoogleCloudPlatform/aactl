@@ -35,9 +35,6 @@ type VulnerabilityOptions struct {
 	// File path to the vulnerability report to import.
 	File string
 
-	// Format of the file to import.
-	Format SourceFormat
-
 	// Quiet suppresses output
 	Quiet bool
 }
@@ -61,9 +58,6 @@ func (o *VulnerabilityOptions) Validate() error {
 
 	if o.File == "" {
 		return ErrMissingPath
-	}
-	if o.Format == SourceFormatUnknown {
-		return ErrMissingFormat
 	}
 	return nil
 }

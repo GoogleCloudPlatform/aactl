@@ -53,7 +53,7 @@ func Import(ctx context.Context, options types.Options) error {
 		return errors.Wrap(err, "error creating source")
 	}
 
-	converter, err := convert.GetConverter(opt.Format)
+	converter, err := convert.GetConverter(s.Format)
 	if err != nil {
 		return errors.Wrap(err, "error getting converter")
 	}
