@@ -8,7 +8,7 @@ require (
 	github.com/google/go-containerregistry v0.14.0
 	github.com/in-toto/in-toto-golang v0.6.0
 	github.com/pkg/errors v0.9.1
-	github.com/rs/zerolog v1.29.0
+	github.com/rs/zerolog v1.29.1
 	github.com/secure-systems-lab/go-securesystemslib v0.4.0
 	github.com/sigstore/cosign v1.13.1
 	github.com/stretchr/testify v1.8.2
