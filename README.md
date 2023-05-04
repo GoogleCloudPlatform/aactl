@@ -31,8 +31,7 @@ Once you have the vulnerability file, importing that file into AA using `aactl`:
 ```shell
 aactl vulnerability --project $project \
                     --source $image \
-                    --file report.json \
-                    --format trivy
+                    --file report.json
 ```
 
 > The $image variable in the above example is the fully qualified URI of the image including its digest (e.g. `us-docker.pkg.dev/project/repo/image@sha256:397d453...`).

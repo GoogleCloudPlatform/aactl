@@ -23,7 +23,7 @@ import (
 )
 
 // GetFullURL gets the fully qualified container repository url
-func GetFullURL(u string) (string, error) {
+var GetFullURL = func(u string) (string, error) {
 	tokens := strings.Split(u, "@")
 	if len(tokens) == 0 {
 		return "", fmt.Errorf("GetFullURL: Invalid URL (%s)", u)

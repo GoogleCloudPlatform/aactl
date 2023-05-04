@@ -1,53 +1,10 @@
 # aactl
 
-You can install `aactl` CLI using one of the following ways:
-
-* [Go](#go)
-* [Homebrew](#homebrew)
-* [RHEL/CentOS](#rhelcentos)
-* [Debian/Ubuntu](#debianubuntu)
-* [Binary](#binary)
-
-See the [release section](https://github.com/GoogleCloudPlatform/aactl/releases/latest) for `aactl` checksums and SBOMs.
-
-### Go
-
 If you have Go 1.17 or newer, you can install latest `aactl` using:
 
 ```shell
 go install github.com/GoogleCloudPlatform/aactl/cmd/aactl@latest
 ```
-
-### Homebrew
-
-On Mac or Linux, you can install `aactl` with [Homebrew](https://brew.sh/):
-
-```shell
-brew tap GoogleCloudPlatform/aactl https://github.com/GoogleCloudPlatform/aactl
-brew install aactl
-```
-
-New release will be automatically picked up when you run `brew upgrade`
-
-
-### RHEL/CentOS
-
-```shell
-rpm -ivh https://github.com/GoogleCloudPlatform/aactl/releases/download/v$VERSION/aactl-$VERSION_Linux-amd64.rpm
-```
-
-### Debian/Ubuntu
-
-```shell
-wget https://github.com/aquasecurity/aactl/releases/download/v$VERSION/aactl-$VERSION_Linux-amd64.deb
-sudo dpkg -i aactl-$VERSION_Linux-64bit.deb
-```
-
-### Binary 
-
-You can also download the [latest release](https://github.com/GoogleCloudPlatform/aactl/releases/latest) version of `aactl` for your operating system/architecture from [here](https://github.com/GoogleCloudPlatform/aactl/releases/latest). Put the binary somewhere in your $PATH, and make sure it has that executable bit.
-
-> The official `aactl` releases include SBOMs
 
 ## Prerequisites 
 

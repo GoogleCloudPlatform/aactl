@@ -20,6 +20,7 @@ import (
 	"sync"
 
 	ca "cloud.google.com/go/containeranalysis/apiv1"
+	"github.com/GoogleCloudPlatform/aactl/pkg/container"
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	"github.com/GoogleCloudPlatform/aactl/pkg/utils"
 	"github.com/GoogleCloudPlatform/aactl/pkg/vul/convert"
@@ -39,27 +40,40 @@ func Import(ctx context.Context, options types.Options) error {
 	if err := options.Validate(); err != nil {
 		return errors.Wrap(err, "error validating options")
 	}
-	s, err := utils.NewFileSource(opt.File, opt.Source)
+
+	resourceURL, err := container.GetFullURL(opt.Source)
+	if err != nil {
+		return errors.Wrap(err, "error getting full url")
+	}
+	log.Info().Msgf("Resource URL: %s", resourceURL)
+	opt.Source = resourceURL
+
+	s, err := utils.NewFileSource(opt.Project, opt.File, opt.Source)
 	if err != nil {
 		return errors.Wrap(err, "error creating source")
 	}
 
-	c, err := convert.GetConverter(opt.Format)
+	converter, err := convert.GetConverter(s.Format)
 	if err != nil {
 		return errors.Wrap(err, "error getting converter")
 	}
 
-	list, err := c(s)
+	noteOccurrencesMap, err := converter(s)
 	if err != nil {
 		return errors.Wrap(err, "error converting source")
 	}
 
 	// TODO: Debug code
-	//_ = deleteNoteOccurrences(ctx, opt, list)
+	//_ = deleteNoteOccurrences(ctx, opt, noteOccurrencesMap)
 
-	log.Info().Msgf("found %d vulnerabilities", len(list))
+	log.Info().Msgf("found %d vulnerabilities", len(noteOccurrencesMap))
 
-	return post(ctx, list, opt)
+	if err := post(ctx, noteOccurrencesMap, opt); err != nil {
+		return err
+	}
+
+	// Create/Update discovery occurrence.
+	return updateDiscoveryNoteAndOcc(ctx, opt.Project, opt.Source)
 }
 
 func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.VulnerabilityOptions) error {
@@ -84,7 +98,7 @@ func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.Vulnera
 			}
 
 			if err := postNoteOccurrences(ctx, opt.Project, noteID, nocc); err != nil {
-				log.Error().Err(err).Msg("error posting notes")
+				log.Error().Err(err).Msg("error posting notes & occurrences")
 				cancel()
 			}
 		}(noteID, nocc)
@@ -99,7 +113,7 @@ func post(ctx context.Context, list types.NoteOccurrencesMap, opt *types.Vulnera
 // Notes will be created only if it does not exist.
 func postNoteOccurrences(ctx context.Context, projectID string, noteID string, nocc types.NoteOccurrences) error {
 	if projectID == "" {
-		return errors.New("projectID required")
+		return types.ErrMissingProject
 	}
 
 	// don't submit end-to-end test
@@ -132,22 +146,39 @@ func postNoteOccurrences(ctx context.Context, projectID string, noteID string, n
 		}
 	}
 
-	// Create/Update Occurrences
-	for _, o := range nocc.Occurrences {
-		if err := createOrUpdateOccurrence(ctx, p, o, c); err != nil {
-			return errors.Wrap(err, "unable to create or update occurrence")
-		}
+	mergedOcc := mergeOccurrences(nocc.Occurrences)
+	if err := createOrUpdateOccurrence(ctx, p, noteID, mergedOcc, c); err != nil {
+		return errors.Wrap(err, "unable to create or update occurrence")
 	}
 
 	return nil
 }
 
-func createOrUpdateOccurrence(ctx context.Context, p string, o *g.Occurrence, c *ca.Client) error {
-	// List occurrences and see if occurrence already exists, update it else
-	// create one.
+func mergeOccurrences(occurrences []*g.Occurrence) *g.Occurrence {
+	if len(occurrences) == 0 {
+		return nil
+	}
+	if len(occurrences) == 1 {
+		return occurrences[0]
+	}
+
+	// Take the first one as parent and only take the PackageIssue from the others
+	// This assumes that all other information in the occ is the same.
+	parent := occurrences[0]
+
+	for i := 1; i < len(occurrences); i++ {
+		packageIssues := occurrences[i].GetVulnerability().GetPackageIssue()
+		parent.GetVulnerability().PackageIssue = append(parent.GetVulnerability().PackageIssue, packageIssues...)
+	}
+
+	return parent
+}
+
+func createOrUpdateOccurrence(ctx context.Context, p string, noteID string, o *g.Occurrence, c *ca.Client) error {
+	// Create occurrence. If already exists, update.
 	listReq := &g.ListOccurrencesRequest{
 		Parent:   p,
-		Filter:   fmt.Sprintf("noteId=\"%s\" AND resourceURL=\"%s\"", o.NoteName, o.GetResourceUri()),
+		Filter:   fmt.Sprintf("noteId=\"%s\" AND resource_url=\"%s\"", noteID, o.GetResourceUri()),
 		PageSize: 10,
 	}
 

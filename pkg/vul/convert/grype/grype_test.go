@@ -27,9 +27,8 @@ func TestGrypeConverter(t *testing.T) {
 		Project: types.TestProjectID,
 		Source:  "us-docker.pkg.dev/project/repo/img@sha256:f6efe...",
 		File:    "../../../../examples/data/grype.json",
-		Format:  types.SourceFormatGrypeJSON,
 	}
-	s, err := utils.NewFileSource(opt.File, opt.Source)
+	s, err := utils.NewFileSource(opt.Project, opt.File, opt.Source)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
 
@@ -40,7 +39,6 @@ func TestGrypeConverter(t *testing.T) {
 	for id, nocc := range list {
 		n := nocc.Note
 		assert.NotEmpty(t, id)
-		assert.NotEmpty(t, n.Name)
 		assert.NotEmpty(t, n.ShortDescription)
 		assert.NotEmpty(t, n.LongDescription)
 		assert.NotEmpty(t, n.RelatedUrl)

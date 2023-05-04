@@ -16,20 +16,13 @@ package types
 
 import (
 	"net/url"
+	"strings"
 
 	"github.com/pkg/errors"
 )
 
 const (
 	TestProjectID = "test"
-)
-
-var (
-	ErrMissingProject = errors.New("missing project")
-	ErrMissingFormat  = errors.New("missing format")
-	ErrMissingPath    = errors.New("missing path")
-	ErrMissingSource  = errors.New("missing source")
-	ErrInvalidSource  = errors.New("invalid source")
 )
 
 type VulnerabilityOptions struct {
@@ -41,9 +34,6 @@ type VulnerabilityOptions struct {
 
 	// File path to the vulnerability report to import.
 	File string
-
-	// Format of the file to import.
-	Format SourceFormat
 
 	// Quiet suppresses output
 	Quiet bool
@@ -63,13 +53,11 @@ func (o *VulnerabilityOptions) Validate() error {
 		return errors.Wrap(ErrInvalidSource, err.Error())
 	}
 	u.Scheme = ""
-	o.Source = u.String()
+	uri, _ := strings.CutPrefix(u.String(), "//")
+	o.Source = uri
 
 	if o.File == "" {
 		return ErrMissingPath
-	}
-	if o.Format == SourceFormatUnknown {
-		return ErrMissingFormat
 	}
 	return nil
 }

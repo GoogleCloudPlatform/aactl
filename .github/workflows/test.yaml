@@ -21,6 +21,11 @@ on:
         required: false
         type: string
         default: ^1.20.1
+      go-version-for-lint:
+        description: 'Go version to use for linting'
+        required: false
+        type: string
+        default: ^1.19
       scan-severity:
         description: 'Trivy scan severity'
         required: false
@@ -30,7 +35,7 @@ on:
         description: 'golangci version to use'
         required: false
         type: string
-        default: 'v1.51'
+        default: 'v1.52.2'
     secrets:
       access_token:
         description: 'Workflow token'
@@ -47,6 +52,7 @@ jobs:
       uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9  # v4.0.0
       with:
         go-version: ${{ inputs.go-version }}
+        cache: false
     - run: go version
     - name: Cache Go Modules
       uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8  # v3.3.1
@@ -58,7 +64,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
     - name: Checkout Code
-      uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
       with:
         token: ${{ secrets.access_token }}
     - name: Tidy Modules
@@ -68,7 +74,7 @@ jobs:
       run: |
         make test
     - name: Parse Coverage
-      uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70  # v3.1.1
+      uses: codecov/codecov-action@894ff025c7b54547a9a2a1e9f228beae737ad3c2  # v3.1.3
       with:
         flags: unittests  # optional
 
@@ -78,21 +84,13 @@ jobs:
       security-events: write
     steps:
     - name: Setup Go
-      uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9  # v4.0.0
+      uses: actions/setup-go@v4  # v4.0.0
       with:
-        go-version: ${{ inputs.go-version }}
+        go-version: ${{ inputs.go-version-for-lint }}
+        cache: false
     - run: go version
-    - name: Cache Go Modules
-      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8  # v3.3.1
-      with:
-        path: |
-          ~/go/pkg/mod
-          ~/.cache/go-build
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
     - name: Checkout Code
-      uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
       with:
         token: ${{ secrets.access_token }}
     - name: Tidy Modules
@@ -108,6 +106,7 @@ jobs:
       uses: golangci/golangci-lint-action@v3  # v3
       with:
         version: ${{ inputs.golangci_version }}
+        skip-cache: true
     - name: Config YAML Lint
       id: yamllint_config
       uses: andstor/file-existence-action@20b4d2e596410855db8f9ca21e96fbe18e12930b  # v2.0
@@ -139,7 +138,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
     - name: Checkout Code
-      uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
       with:
         token: ${{ secrets.access_token }}
     - name: Tidy Modules
@@ -158,11 +157,11 @@ jobs:
       security-events: write
     steps:
     - name: Checkout Code
-      uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3  # v3.5.0
+      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
       with:
         token: ${{ secrets.access_token }}
     - name: Scan Repo
-      uses: aquasecurity/trivy-action@1f0aa582c8c8f5f7639610d6d38baddfea4fdcee  # master
+      uses: aquasecurity/trivy-action@e5f43133f6e8736992c9f3c1b3296e24b37e17f2  # master
       with:
         scan-type: 'fs'
         ignore-unfixed: true
