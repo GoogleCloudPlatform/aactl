@@ -36,16 +36,13 @@ on:
         required: false
         type: string
         default: 'v1.52.2'
-    secrets:
-      access_token:
-        description: 'Workflow token'
-        required: true
 permissions:
   contents: read
 jobs:
   unit:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
     steps:
     - name: Setup Go
@@ -65,8 +62,6 @@ jobs:
           ${{ runner.os }}-go-
     - name: Checkout Code
       uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
-      with:
-        token: ${{ secrets.access_token }}
     - name: Tidy Modules
       run: |
         make tidy
@@ -81,6 +76,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
     steps:
     - name: Setup Go
@@ -91,8 +87,6 @@ jobs:
     - run: go version
     - name: Checkout Code
       uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
-      with:
-        token: ${{ secrets.access_token }}
     - name: Tidy Modules
       run: |
         make tidy
@@ -121,6 +115,7 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
     steps:
     - name: Setup Go
@@ -139,8 +134,6 @@ jobs:
           ${{ runner.os }}-go-
     - name: Checkout Code
       uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
-      with:
-        token: ${{ secrets.access_token }}
     - name: Tidy Modules
       run: |
         make tidy
@@ -154,12 +147,11 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
     steps:
     - name: Checkout Code
       uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
-      with:
-        token: ${{ secrets.access_token }}
     - name: Scan Repo
       uses: aquasecurity/trivy-action@e5f43133f6e8736992c9f3c1b3296e24b37e17f2  # master
       with:
@@ -175,4 +167,3 @@ jobs:
   #    uses: github/codeql-action/upload-sarif@168b99b3c22180941ae7dbdd5f5c9678ede476ba  # v2.11.6
   #    with:
   #      sarif_file: 'trivy-results.sarif'
-  #      token: ${{ secrets.access_token }}
