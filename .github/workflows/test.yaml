@@ -42,6 +42,7 @@ jobs:
   unit:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
     steps:
     - name: Setup Go
@@ -75,6 +76,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
     steps:
     - name: Setup Go
@@ -113,6 +115,7 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
     steps:
     - name: Setup Go
@@ -144,12 +147,11 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       security-events: write
     steps:
     - name: Checkout Code
       uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
-      with:
-        token: ${{ secrets.access_token }}
     - name: Scan Repo
       uses: aquasecurity/trivy-action@e5f43133f6e8736992c9f3c1b3296e24b37e17f2  # master
       with:
