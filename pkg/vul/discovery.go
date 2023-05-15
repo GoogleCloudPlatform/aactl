@@ -76,7 +76,7 @@ func updateDiscoveryOcc(ctx context.Context, parent string, discoveryNoteID stri
 		NoteName:    noteName,
 		Details: &g.Occurrence_Discovery{
 			Discovery: &g.DiscoveryOccurrence{
-				ContinuousAnalysis: g.DiscoveryOccurrence_INACTIVE,
+				ContinuousAnalysis: g.DiscoveryOccurrence_ACTIVE,
 				AnalysisStatus:     g.DiscoveryOccurrence_COMPLETE,
 				LastScanTime:       timestamppb.New(time.Now()),
 			},
