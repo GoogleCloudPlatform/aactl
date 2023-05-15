@@ -36,10 +36,6 @@ on:
         required: false
         type: string
         default: 'v1.52.2'
-    secrets:
-      access_token:
-        description: 'Workflow token'
-        required: true
 permissions:
   contents: read
 jobs:
@@ -65,8 +61,6 @@ jobs:
           ${{ runner.os }}-go-
     - name: Checkout Code
       uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
-      with:
-        token: ${{ secrets.access_token }}
     - name: Tidy Modules
       run: |
         make tidy
@@ -91,8 +85,6 @@ jobs:
     - run: go version
     - name: Checkout Code
       uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
-      with:
-        token: ${{ secrets.access_token }}
     - name: Tidy Modules
       run: |
         make tidy
@@ -139,8 +131,6 @@ jobs:
           ${{ runner.os }}-go-
     - name: Checkout Code
       uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab  # v3.5.2
-      with:
-        token: ${{ secrets.access_token }}
     - name: Tidy Modules
       run: |
         make tidy
@@ -175,4 +165,3 @@ jobs:
   #    uses: github/codeql-action/upload-sarif@168b99b3c22180941ae7dbdd5f5c9678ede476ba  # v2.11.6
   #    with:
   #      sarif_file: 'trivy-results.sarif'
-  #      token: ${{ secrets.access_token }}
