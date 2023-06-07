@@ -16,10 +16,10 @@ package container
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/GoogleCloudPlatform/aactl/pkg/types"
 	crname "github.com/google/go-containerregistry/pkg/name"
+	"github.com/pkg/errors"
 	"github.com/sigstore/cosign/v2/cmd/cosign/cli/fulcio"
 	"github.com/sigstore/cosign/v2/pkg/cosign"
 	"github.com/sigstore/cosign/v2/pkg/oci"
@@ -28,21 +28,21 @@ import (
 func getCosignOptions(ctx context.Context) (*cosign.CheckOpts, error) {
 	rekorPubKeys, err := cosign.GetRekorPubs(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", types.ErrInternal, err)
+		return nil, errors.Wrap(types.ErrInternal, err.Error())
 	}
 
 	ctPubKeys, err := cosign.GetCTLogPubs(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", types.ErrInternal, err)
+		return nil, errors.Wrap(types.ErrInternal, err.Error())
 	}
 
 	roots, err := fulcio.GetRoots()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", types.ErrInternal, err)
+		return nil, errors.Wrap(types.ErrInternal, err.Error())
 	}
 	intermediates, err := fulcio.GetIntermediates()
 	if err != nil {
-		return nil, fmt.Errorf("%w: %s", types.ErrInternal, err)
+		return nil, errors.Wrap(types.ErrInternal, err.Error())
 	}
 
 	return &cosign.CheckOpts{
