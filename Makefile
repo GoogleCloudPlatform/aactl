@@ -24,8 +24,8 @@ tidy: ## Updates the go modules and vendors all dependancies
 	go mod vendor
 
 .PHONY: upgrade
-upgrade: ## Upgrades all dependancies 
-	go get -d -u ./...
+upgrade: ## Upgrades all required dependencies
+	go get $(go list -f '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}' -m -mod=mod all)
 	go mod tidy
 	go mod vendor
 
