@@ -20,7 +20,7 @@ import (
 
 	"github.com/pkg/errors"
 	dsselib "github.com/secure-systems-lab/go-securesystemslib/dsse"
-	"github.com/sigstore/cosign/pkg/oci"
+	"github.com/sigstore/cosign/v2/pkg/oci"
 )
 
 type DecodedEnvelope struct {

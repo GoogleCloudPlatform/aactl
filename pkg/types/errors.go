@@ -24,4 +24,5 @@ var (
 	ErrMissingPath           = errors.New("missing path")
 	ErrMissingSource         = errors.New("missing source")
 	ErrInvalidSource         = errors.New("invalid source")
+	ErrInternal              = errors.New("internal error")
 )
