@@ -5,7 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go/containeranalysis v0.10.0
 	github.com/Jeffail/gabs/v2 v2.7.0
-	github.com/google/go-containerregistry v0.14.1-0.20230409045903-ed5c185df419
+	github.com/google/go-containerregistry v0.15.2
 	github.com/in-toto/in-toto-golang v0.9.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.1
