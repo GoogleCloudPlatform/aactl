@@ -13,46 +13,27 @@
 # limitations under the License.
 
 substitutions:
-  __REPO_NAME: aactl-demo
-  _LOCATION: us-central1
-  _IMG_NAME: node-demo
-  _IMG_VERSION: v0.0.4
+  _PROJECT_ID: test # using project id `test` will make sure no notes/occ are created.
 
 steps:
 
-# Build image
-- id: build
+# Pull image
+- id: pull
   name: gcr.io/cloud-builders/docker
   entrypoint: /bin/bash
-  dir: examples/cloud-build
-  args:
-  - -c
-  - |
-    docker build \
-      -t "${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_IMG_NAME}:${_IMG_VERSION}" \
-      .
-
-# Publish image
-- id: publish
-  name: gcr.io/cloud-builders/docker
-  entrypoint: /bin/bash
-  waitFor:
-  - build
-  dir: examples/cloud-build
   args:
   - -c
   - |-
-    docker push "${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_IMG_NAME}:${_IMG_VERSION}"
-    docker image inspect "${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_IMG_NAME}:${_IMG_VERSION}" \
+    docker pull docker.io/library/nginx:1.24.0
+    docker image inspect docker pull docker.io/library/nginx:1.24.0 \
       --format '{{index .RepoDigests 0}}' > image-digest.txt
     cat image-digest.txt
 
 - id: scan
   name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: /bin/bash
-  dir: examples/cloud-build
   waitFor:
-  - publish
+  - pull
   args:
   - -c
   - |-
@@ -62,16 +43,12 @@ steps:
 - id: import
   waitFor:
   - scan
-  name: gcr.io/cloud-builders/aactl
-  dir: examples/cloud-build
+  name: us-docker.pkg.dev/aactl-builder/bin/aactl:v0.4.12
   args:
   - vulnerability
-  - --project=$PROJECT_ID
-  - --source=${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_IMG_NAME}:${_IMG_VERSION}
+  - --project=$_PROJECT_ID
+  - --source=docker.io/library/nginx:1.24.0
   - --file=report.json
-
-images:
-- ${_LOCATION}-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/$_IMG_NAME:${_IMG_VERSION}
 
 options:
   # Verify generation of attestations and provenance metadata for this build.
