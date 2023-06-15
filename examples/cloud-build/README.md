@@ -1,6 +1,9 @@
 # aactl as builder in Google Cloud Build (GCB)
 
 In addition to being used as a CLI, `aactl` can also be used as a builder.
+To run in GCB, aactl requires that the service account
+(Cloud Build Service Account) running the build
+have `containeraalnysis.admin` permissions to create notes and occurrences.
 
 ## Adding aactl step to your pipeline
 
