@@ -9,7 +9,7 @@ require (
 	github.com/in-toto/in-toto-golang v0.9.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.29.1
-	github.com/secure-systems-lab/go-securesystemslib v0.6.0
+	github.com/secure-systems-lab/go-securesystemslib v0.7.0
 	github.com/sigstore/cosign/v2 v2.1.1
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli/v2 v2.25.7
