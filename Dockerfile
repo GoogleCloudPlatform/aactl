@@ -21,6 +21,8 @@ ARG DATE
 ENV VERSION=${VERSION}
 ENV COMMIT=${COMMIT}
 ENV DATE=${DATE}
+RUN go mod download
+RUN go mod vendor
 RUN CGO_ENABLED=0 go build -a -trimpath -ldflags="\
     -w -s -X main.version=$VERSION \
 	-w -s -X main.commit=$COMMIT \
