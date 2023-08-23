@@ -70,6 +70,7 @@ image: ## Builds the docker image
 		--build-arg COMMIT=$(COMMIT) \
 		--build-arg DATE=$(CURRENT_DATE) \
 		-t aactl:$(RELEASE_VERSION) \
+		-t aactl:latest \
 		.
 
 .PHONY: tag
