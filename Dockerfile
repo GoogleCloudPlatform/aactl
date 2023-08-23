@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang@sha256:57dbdd5c8fe24e357b15a4ed045b0b1607a99a1465b5101304ea39e11547be27 AS builder
+FROM golang:1.20.7 AS builder
 WORKDIR /src/
 COPY . /src/
 ARG VERSION
