@@ -65,9 +65,8 @@ steps:
     args:
     - vulnerability
     - --project=$PROJECT_ID
-    - --source=$(cat image-digest.txt)
+    - --source=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/${_IMG_NAME}:${_IMG_VERSION}
     - --file=report.json
-    - --format=grype
 
 images:
 - ${LOCATION}-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$_IMG_NAME:${_IMG_VERSION}

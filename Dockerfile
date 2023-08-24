@@ -28,9 +28,10 @@ RUN CGO_ENABLED=0 go build -a -trimpath -ldflags="\
 	-w -s -X main.commit=$COMMIT \
 	-w -s -X main.date=$DATE \
 	-extldflags '-static'" \
-    -mod vendor -o app cmd/aactl/main.go
+    -mod vendor -o aactl cmd/aactl/main.go
 
-FROM scratch
+FROM alpine:3.18.3
+RUN apk update && apk add bash
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /src/app /app
-ENTRYPOINT ["/app"]
+COPY --from=builder /src/aactl /bin/aactl
+ENTRYPOINT ["/bin/aactl"]
