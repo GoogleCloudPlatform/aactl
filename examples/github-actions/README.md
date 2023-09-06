@@ -1,28 +1,23 @@
 # aactl as builder in GitHub Actions (GHA)
 
-In addition to being used as a CLI, `aactl` can also be used as a builder.
+In addition to being used as a CLI, `aactl` can also be used as a github action.
 
 ## inputs
 
 * `project` - (required) GCP Project ID
-* `digest` - (required) Image digest
+* `source` - (required) Full image path with tag or digest
 * `file` - (required) Path to the vulnerability file
-* `format` - (required) Format of the vulnerability file
 
 ## usage
 
 Below example, shows how to import vulnerabilities from previously generated report.
 
-> Make sure to use the latest tag release from [here](https://github.com/GoogleCloudPlatform/aactl/releases)
 
 ```yaml
-uses: GoogleCloudPlatform/aactl@v0.3.4`
-with:
-  type: vulnerability
-  project: ${{ env.PROJECT_ID }}
-  digest: ${{ steps.build.outputs.digest }}
-  file: ${{ steps.scan.outputs.output }}
-  format: ${{ steps.scan.outputs.format }}
+      - name: 'Run aactl'
+        uses: docker://gcr.io/cloud-builders/aactl:latest
+        with:
+          args: vuln --project ${{ env.PROJECT_ID }} --source ${{ env.IMAGE_ID }} --file ${{ steps.scan.outputs.output }}
 ```
 
-> Fully working example can be found in [.github/workflows/import.yaml](../../.github/workflows/import.yaml).
+> Fully working example can be found in [on-push.yaml](on-push.yaml).
