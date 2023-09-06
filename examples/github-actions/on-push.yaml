@@ -42,7 +42,7 @@ jobs:
         with:
           workload_identity_provider: 'projects/PROJECT_ID/locations/global/workloadIdentityPools/<POOL_ID>/providers/<PROVIDER_ID>'
           service_account: '<SERVICE_ACCOUNT_ID>@<PROJECT_ID>.iam.gserviceaccount.com'
-          
+
       - name: 'Run aactl'
         uses: docker://gcr.io/cloud-builders/aactl:latest
         with:
