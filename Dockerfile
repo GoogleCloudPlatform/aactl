@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM golang:1.20.7 AS builder
+FROM golang:1.21 AS builder
 WORKDIR /src/
 COPY . /src/
 ARG VERSION

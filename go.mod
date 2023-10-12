@@ -1,6 +1,6 @@
 module github.com/GoogleCloudPlatform/aactl
 
-go 1.20
+go 1.21
 
 require (
 	cloud.google.com/go/containeranalysis v0.10.1
