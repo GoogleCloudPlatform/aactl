@@ -1,4 +1,4 @@
-# cloud.google.com/go/compute v1.20.1
+# cloud.google.com/go/compute v1.23.0
 ## explicit; go 1.19
 cloud.google.com/go/compute/internal
 # cloud.google.com/go/compute/metadata v0.2.3
@@ -482,7 +482,7 @@ github.com/google/s2a-go/internal/v2/certverifier
 github.com/google/s2a-go/internal/v2/remotesigner
 github.com/google/s2a-go/internal/v2/tlsconfigstore
 github.com/google/s2a-go/stream
-# github.com/google/uuid v1.3.0
+# github.com/google/uuid v1.3.1
 ## explicit
 github.com/google/uuid
 # github.com/googleapis/enterprise-certificate-proxy v0.2.5
@@ -899,7 +899,7 @@ go.uber.org/zap/internal/bufferpool
 go.uber.org/zap/internal/color
 go.uber.org/zap/internal/exit
 go.uber.org/zap/zapcore
-# golang.org/x/crypto v0.11.0
+# golang.org/x/crypto v0.12.0
 ## explicit; go 1.17
 golang.org/x/crypto/argon2
 golang.org/x/crypto/blake2b
@@ -940,7 +940,7 @@ golang.org/x/exp/slices
 # golang.org/x/mod v0.11.0
 ## explicit; go 1.17
 golang.org/x/mod/sumdb/note
-# golang.org/x/net v0.12.0
+# golang.org/x/net v0.14.0
 ## explicit; go 1.17
 golang.org/x/net/context
 golang.org/x/net/html
@@ -953,8 +953,8 @@ golang.org/x/net/internal/socks
 golang.org/x/net/internal/timeseries
 golang.org/x/net/proxy
 golang.org/x/net/trace
-# golang.org/x/oauth2 v0.9.0
-## explicit; go 1.17
+# golang.org/x/oauth2 v0.11.0
+## explicit; go 1.18
 golang.org/x/oauth2
 golang.org/x/oauth2/authhandler
 golang.org/x/oauth2/google
@@ -965,7 +965,8 @@ golang.org/x/oauth2/jwt
 # golang.org/x/sync v0.3.0
 ## explicit; go 1.17
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.10.0
+golang.org/x/sync/semaphore
+# golang.org/x/sys v0.11.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -973,10 +974,10 @@ golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/term v0.10.0
+# golang.org/x/term v0.11.0
 ## explicit; go 1.17
 golang.org/x/term
-# golang.org/x/text v0.11.0
+# golang.org/x/text v0.12.0
 ## explicit; go 1.17
 golang.org/x/text/internal/language
 golang.org/x/text/internal/language/compact
@@ -1014,24 +1015,24 @@ google.golang.org/appengine/internal/socket
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/socket
 google.golang.org/appengine/urlfetch
-# google.golang.org/genproto v0.0.0-20230710151506-e685fd7b542b
+# google.golang.org/genproto v0.0.0-20230822172742-b8732ec3820d
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/devtools/containeranalysis/v1
 google.golang.org/genproto/googleapis/grafeas/v1
 google.golang.org/genproto/googleapis/iam/v1
 google.golang.org/genproto/googleapis/type/expr
 google.golang.org/genproto/internal
-# google.golang.org/genproto/googleapis/api v0.0.0-20230706204954-ccb25ca9f130
+# google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/api
 google.golang.org/genproto/googleapis/api/annotations
-# google.golang.org/genproto/googleapis/rpc v0.0.0-20230706204954-ccb25ca9f130
+# google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.56.2
-## explicit; go 1.17
+# google.golang.org/grpc v1.59.0
+## explicit; go 1.19
 google.golang.org/grpc
 google.golang.org/grpc/attributes
 google.golang.org/grpc/backoff
@@ -1073,6 +1074,7 @@ google.golang.org/grpc/internal/grpclog
 google.golang.org/grpc/internal/grpcrand
 google.golang.org/grpc/internal/grpcsync
 google.golang.org/grpc/internal/grpcutil
+google.golang.org/grpc/internal/idle
 google.golang.org/grpc/internal/metadata
 google.golang.org/grpc/internal/pretty
 google.golang.org/grpc/internal/resolver
@@ -1088,6 +1090,7 @@ google.golang.org/grpc/keepalive
 google.golang.org/grpc/metadata
 google.golang.org/grpc/peer
 google.golang.org/grpc/resolver
+google.golang.org/grpc/resolver/manual
 google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
