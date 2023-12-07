@@ -46,7 +46,7 @@ jobs:
       security-events: write
     steps:
     - name: Setup Go
-      uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9  # v4.0.0
+      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491  # v5.0.0
       with:
         go-version: ${{ inputs.go-version }}
         cache: false
@@ -80,7 +80,7 @@ jobs:
       security-events: write
     steps:
     - name: Setup Go
-      uses: actions/setup-go@v4  # v4.0.0
+      uses: actions/setup-go@v5  # v4.0.0
       with:
         go-version: ${{ inputs.go-version-for-lint }}
         cache: false
@@ -119,7 +119,7 @@ jobs:
       security-events: write
     steps:
     - name: Setup Go
-      uses: actions/setup-go@4d34df0c2316fe8122ab82dc22947d607c0c91f9  # v4.0.0
+      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491  # v5.0.0
       with:
         go-version: ${{ inputs.go-version }}
     - run: go version
