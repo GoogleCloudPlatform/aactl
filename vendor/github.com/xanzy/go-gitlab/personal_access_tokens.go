@@ -120,6 +120,37 @@ func (s *PersonalAccessTokensService) GetSinglePersonalAccessToken(options ...Re
 	return pat, resp, nil
 }
 
+// RotatePersonalAccessTokenOptions represents the available RotatePersonalAccessToken()
+// options.
+//
+// GitLab API docs:
+// https://docs.gitlab.com/ee/api/personal_access_tokens.html#rotate-a-personal-access-token
+type RotatePersonalAccessTokenOptions struct {
+	ExpiresAt *ISOTime `url:"expires_at,omitempty" json:"expires_at,omitempty"`
+}
+
+// RotatePersonalAccessToken revokes a token and returns a new token that
+// expires in one week per default.
+//
+// GitLab API docs:
+// https://docs.gitlab.com/ee/api/personal_access_tokens.html#rotate-a-personal-access-token
+func (s *PersonalAccessTokensService) RotatePersonalAccessToken(token int, opt *RotatePersonalAccessTokenOptions, options ...RequestOptionFunc) (*PersonalAccessToken, *Response, error) {
+	u := fmt.Sprintf("personal_access_tokens/%d/rotate", token)
+
+	req, err := s.client.NewRequest(http.MethodPost, u, opt, options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	pat := new(PersonalAccessToken)
+	resp, err := s.client.Do(req, pat)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return pat, resp, nil
+}
+
 // RevokePersonalAccessToken revokes a personal access token.
 //
 // GitLab API docs:
