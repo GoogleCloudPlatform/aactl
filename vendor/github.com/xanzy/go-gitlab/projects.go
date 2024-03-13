@@ -158,14 +158,17 @@ type Project struct {
 	AutoDevopsDeployStrategy                 string             `json:"auto_devops_deploy_strategy"`
 	AutoDevopsEnabled                        bool               `json:"auto_devops_enabled"`
 	BuildGitStrategy                         string             `json:"build_git_strategy"`
-	EmailsDisabled                           bool               `json:"emails_disabled"`
+	EmailsEnabled                            bool               `json:"emails_enabled"`
 	ExternalAuthorizationClassificationLabel string             `json:"external_authorization_classification_label"`
 	RequirementsEnabled                      bool               `json:"requirements_enabled"`
 	RequirementsAccessLevel                  AccessControlValue `json:"requirements_access_level"`
 	SecurityAndComplianceEnabled             bool               `json:"security_and_compliance_enabled"`
 	SecurityAndComplianceAccessLevel         AccessControlValue `json:"security_and_compliance_access_level"`
 	MergeRequestDefaultTargetSelf            bool               `json:"mr_default_target_self"`
+	ModelExperimentsAccessLevel              AccessControlValue `json:"model_experiments_access_level"`
 
+	// Deprecated: Use EmailsEnabled instead
+	EmailsDisabled bool `json:"emails_disabled"`
 	// Deprecated: This parameter has been renamed to PublicJobs in GitLab 9.0.
 	PublicBuilds bool `json:"public_builds"`
 }
@@ -195,13 +198,14 @@ type ContainerExpirationPolicy struct {
 
 // ForkParent represents the parent project when this is a fork.
 type ForkParent struct {
-	HTTPURLToRepo     string `json:"http_url_to_repo"`
 	ID                int    `json:"id"`
 	Name              string `json:"name"`
 	NameWithNamespace string `json:"name_with_namespace"`
 	Path              string `json:"path"`
 	PathWithNamespace string `json:"path_with_namespace"`
+	HTTPURLToRepo     string `json:"http_url_to_repo"`
 	WebURL            string `json:"web_url"`
+	RepositoryStorage string `json:"repository_storage"`
 }
 
 // GroupAccess represents group access.
@@ -322,6 +326,8 @@ type ListProjectsOptions struct {
 	IDAfter                  *int              `url:"id_after,omitempty" json:"id_after,omitempty"`
 	IDBefore                 *int              `url:"id_before,omitempty" json:"id_before,omitempty"`
 	Imported                 *bool             `url:"imported,omitempty" json:"imported,omitempty"`
+	IncludeHidden            *bool             `url:"include_hidden,omitempty" json:"include_hidden,omitempty"`
+	IncludePendingDelete     *bool             `url:"include_pending_delete,omitempty" json:"include_pending_delete,omitempty"`
 	LastActivityAfter        *time.Time        `url:"last_activity_after,omitempty" json:"last_activity_after,omitempty"`
 	LastActivityBefore       *time.Time        `url:"last_activity_before,omitempty" json:"last_activity_before,omitempty"`
 	Membership               *bool             `url:"membership,omitempty" json:"membership,omitempty"`
@@ -373,6 +379,31 @@ func (s *ProjectsService) ListUserProjects(uid interface{}, opt *ListProjectsOpt
 		return nil, nil, err
 	}
 	u := fmt.Sprintf("users/%s/projects", user)
+
+	req, err := s.client.NewRequest(http.MethodGet, u, opt, options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var p []*Project
+	resp, err := s.client.Do(req, &p)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return p, resp, nil
+}
+
+// ListUserContributedProjects gets a list of visible projects a given user has contributed to.
+//
+// GitLab API docs:
+// https://docs.gitlab.com/ee/api/projects.html#list-projects-a-user-has-contributed-to
+func (s *ProjectsService) ListUserContributedProjects(uid interface{}, opt *ListProjectsOptions, options ...RequestOptionFunc) ([]*Project, *Response, error) {
+	user, err := parseID(uid)
+	if err != nil {
+		return nil, nil, err
+	}
+	u := fmt.Sprintf("users/%s/contributed_projects", user)
 
 	req, err := s.client.NewRequest(http.MethodGet, u, opt, options)
 	if err != nil {
@@ -589,7 +620,7 @@ type CreateProjectOptions struct {
 	ContainerRegistryAccessLevel              *AccessControlValue                  `url:"container_registry_access_level,omitempty" json:"container_registry_access_level,omitempty"`
 	DefaultBranch                             *string                              `url:"default_branch,omitempty" json:"default_branch,omitempty"`
 	Description                               *string                              `url:"description,omitempty" json:"description,omitempty"`
-	EmailsDisabled                            *bool                                `url:"emails_disabled,omitempty" json:"emails_disabled,omitempty"`
+	EmailsEnabled                             *bool                                `url:"emails_enabled,omitempty" json:"emails_enabled,omitempty"`
 	EnforceAuthChecksOnUploads                *bool                                `url:"enforce_auth_checks_on_uploads,omitempty" json:"enforce_auth_checks_on_uploads,omitempty"`
 	ExternalAuthorizationClassificationLabel  *string                              `url:"external_authorization_classification_label,omitempty" json:"external_authorization_classification_label,omitempty"`
 	ForkingAccessLevel                        *AccessControlValue                  `url:"forking_access_level,omitempty" json:"forking_access_level,omitempty"`
@@ -606,6 +637,7 @@ type CreateProjectOptions struct {
 	MergeTrainsEnabled                        *bool                                `url:"merge_trains_enabled,omitempty" json:"merge_trains_enabled,omitempty"`
 	Mirror                                    *bool                                `url:"mirror,omitempty" json:"mirror,omitempty"`
 	MirrorTriggerBuilds                       *bool                                `url:"mirror_trigger_builds,omitempty" json:"mirror_trigger_builds,omitempty"`
+	ModelExperimentsAccessLevel               *AccessControlValue                  `url:"model_experiments_access_level,omitempty" json:"model_experiments_access_level,omitempty"`
 	Name                                      *string                              `url:"name,omitempty" json:"name,omitempty"`
 	NamespaceID                               *int                                 `url:"namespace_id,omitempty" json:"namespace_id,omitempty"`
 	OnlyAllowMergeIfAllDiscussionsAreResolved *bool                                `url:"only_allow_merge_if_all_discussions_are_resolved,omitempty" json:"only_allow_merge_if_all_discussions_are_resolved,omitempty"`
@@ -646,6 +678,8 @@ type CreateProjectOptions struct {
 	CIForwardDeploymentEnabled *bool `url:"ci_forward_deployment_enabled,omitempty" json:"ci_forward_deployment_enabled,omitempty"`
 	// Deprecated: Use ContainerRegistryAccessLevel instead.
 	ContainerRegistryEnabled *bool `url:"container_registry_enabled,omitempty" json:"container_registry_enabled,omitempty"`
+	// Deprecated: Use EmailsEnabled instead
+	EmailsDisabled *bool `url:"emails_disabled,omitempty" json:"emails_disabled,omitempty"`
 	// Deprecated: Use IssuesAccessLevel instead.
 	IssuesEnabled *bool `url:"issues_enabled,omitempty" json:"issues_enabled,omitempty"`
 	// Deprecated: No longer supported in recent versions.
@@ -812,7 +846,7 @@ type EditProjectOptions struct {
 	ContainerRegistryAccessLevel              *AccessControlValue                  `url:"container_registry_access_level,omitempty" json:"container_registry_access_level,omitempty"`
 	DefaultBranch                             *string                              `url:"default_branch,omitempty" json:"default_branch,omitempty"`
 	Description                               *string                              `url:"description,omitempty" json:"description,omitempty"`
-	EmailsDisabled                            *bool                                `url:"emails_disabled,omitempty" json:"emails_disabled,omitempty"`
+	EmailsEnabled                             *bool                                `url:"emails_enabled,omitempty" json:"emails_enabled,omitempty"`
 	EnforceAuthChecksOnUploads                *bool                                `url:"enforce_auth_checks_on_uploads,omitempty" json:"enforce_auth_checks_on_uploads,omitempty"`
 	ExternalAuthorizationClassificationLabel  *string                              `url:"external_authorization_classification_label,omitempty" json:"external_authorization_classification_label,omitempty"`
 	ForkingAccessLevel                        *AccessControlValue                  `url:"forking_access_level,omitempty" json:"forking_access_level,omitempty"`
@@ -830,9 +864,11 @@ type EditProjectOptions struct {
 	MergeRequestsTemplate                     *string                              `url:"merge_requests_template,omitempty" json:"merge_requests_template,omitempty"`
 	MergeTrainsEnabled                        *bool                                `url:"merge_trains_enabled,omitempty" json:"merge_trains_enabled,omitempty"`
 	Mirror                                    *bool                                `url:"mirror,omitempty" json:"mirror,omitempty"`
+	MirrorBranchRegex                         *string                              `url:"mirror_branch_regex,omitempty" json:"mirror_branch_regex,omitempty"`
 	MirrorOverwritesDivergedBranches          *bool                                `url:"mirror_overwrites_diverged_branches,omitempty" json:"mirror_overwrites_diverged_branches,omitempty"`
 	MirrorTriggerBuilds                       *bool                                `url:"mirror_trigger_builds,omitempty" json:"mirror_trigger_builds,omitempty"`
 	MirrorUserID                              *int                                 `url:"mirror_user_id,omitempty" json:"mirror_user_id,omitempty"`
+	ModelExperimentsAccessLevel               *AccessControlValue                  `url:"model_experiments_access_level,omitempty" json:"model_experiments_access_level,omitempty"`
 	Name                                      *string                              `url:"name,omitempty" json:"name,omitempty"`
 	OnlyAllowMergeIfAllDiscussionsAreResolved *bool                                `url:"only_allow_merge_if_all_discussions_are_resolved,omitempty" json:"only_allow_merge_if_all_discussions_are_resolved,omitempty"`
 	OnlyAllowMergeIfPipelineSucceeds          *bool                                `url:"only_allow_merge_if_pipeline_succeeds,omitempty" json:"only_allow_merge_if_pipeline_succeeds,omitempty"`
@@ -870,6 +906,8 @@ type EditProjectOptions struct {
 
 	// Deprecated: Use ContainerRegistryAccessLevel instead.
 	ContainerRegistryEnabled *bool `url:"container_registry_enabled,omitempty" json:"container_registry_enabled,omitempty"`
+	// Deprecated: Use EmailsEnabled instead
+	EmailsDisabled *bool `url:"emails_disabled,omitempty" json:"emails_disabled,omitempty"`
 	// Deprecated: Use IssuesAccessLevel instead.
 	IssuesEnabled *bool `url:"issues_enabled,omitempty" json:"issues_enabled,omitempty"`
 	// Deprecated: Use BuildsAccessLevel instead.
@@ -1803,6 +1841,7 @@ func (s *ProjectsService) GetProjectApprovalRule(pid interface{}, ruleID int, op
 type CreateProjectLevelRuleOptions struct {
 	Name                          *string `url:"name,omitempty" json:"name,omitempty"`
 	ApprovalsRequired             *int    `url:"approvals_required,omitempty" json:"approvals_required,omitempty"`
+	ReportType                    *string `url:"report_type,omitempty" json:"report_type,omitempty"`
 	RuleType                      *string `url:"rule_type,omitempty" json:"rule_type,omitempty"`
 	UserIDs                       *[]int  `url:"user_ids,omitempty" json:"user_ids,omitempty"`
 	GroupIDs                      *[]int  `url:"group_ids,omitempty" json:"group_ids,omitempty"`
