@@ -276,6 +276,12 @@ func (v *V001Entry) Canonicalize(_ context.Context) ([]byte, error) {
 		ProposedContent: nil, // this is explicitly done as we don't want to canonicalize the envelope
 	}
 
+	for _, s := range canonicalEntry.Signatures {
+		if s.Signature == nil {
+			return nil, errors.New("canonical entry missing required signature")
+		}
+	}
+
 	sort.Slice(canonicalEntry.Signatures, func(i, j int) bool {
 		return *canonicalEntry.Signatures[i].Signature < *canonicalEntry.Signatures[j].Signature
 	})
@@ -403,13 +409,27 @@ func verifyEnvelope(allPubKeyBytes [][]byte, env *dsse.Envelope) (map[string]*x5
 	return verifierBySig, nil
 }
 
-func (v V001Entry) Verifier() (pki.PublicKey, error) {
+func (v V001Entry) Verifiers() ([]pki.PublicKey, error) {
 	if len(v.DSSEObj.Signatures) == 0 {
 		return nil, errors.New("dsse v0.0.1 entry not initialized")
 	}
 
-	//TODO: return multiple pki.PublicKeys; sigstore/rekor issue #1278
-	return x509.NewPublicKey(bytes.NewReader(*v.DSSEObj.Signatures[0].Verifier))
+	var keys []pki.PublicKey
+	for _, s := range v.DSSEObj.Signatures {
+		key, err := x509.NewPublicKey(bytes.NewReader(*s.Verifier))
+		if err != nil {
+			return nil, err
+		}
+		keys = append(keys, key)
+	}
+	return keys, nil
+}
+
+func (v V001Entry) ArtifactHash() (string, error) {
+	if v.DSSEObj.PayloadHash == nil || v.DSSEObj.PayloadHash.Algorithm == nil || v.DSSEObj.PayloadHash.Value == nil {
+		return "", errors.New("dsse v0.0.1 entry not initialized")
+	}
+	return strings.ToLower(fmt.Sprintf("%s:%s", *v.DSSEObj.PayloadHash.Algorithm, *v.DSSEObj.PayloadHash.Value)), nil
 }
 
 func (v V001Entry) Insertable() (bool, error) {
