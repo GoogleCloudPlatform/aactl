@@ -49,6 +49,7 @@ type Pipeline struct {
 	Status         string          `json:"status"`
 	Source         string          `json:"source"`
 	Ref            string          `json:"ref"`
+	Name           string          `json:"name"`
 	SHA            string          `json:"sha"`
 	BeforeSHA      string          `json:"before_sha"`
 	Tag            bool            `json:"tag"`
@@ -115,7 +116,7 @@ type PipelineTestCases struct {
 	Classname      string          `json:"classname"`
 	File           string          `json:"file"`
 	ExecutionTime  float64         `json:"execution_time"`
-	SystemOutput   string          `json:"system_output"`
+	SystemOutput   interface{}     `json:"system_output"`
 	StackTrace     string          `json:"stack_trace"`
 	AttachmentURL  string          `json:"attachment_url"`
 	RecentFailures *RecentFailures `json:"recent_failures"`
@@ -135,6 +136,7 @@ func (p PipelineTestReport) String() string {
 // on other assets, like Commit.
 type PipelineInfo struct {
 	ID        int        `json:"id"`
+	IID       int        `json:"iid"`
 	ProjectID int        `json:"project_id"`
 	Status    string     `json:"status"`
 	Source    string     `json:"source"`
