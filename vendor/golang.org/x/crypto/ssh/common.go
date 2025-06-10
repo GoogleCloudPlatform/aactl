@@ -85,7 +85,7 @@ var supportedHostKeyAlgos = []string{
 // This is based on RFC 4253, section 6.4, but with hmac-md5 variants removed
 // because they have reached the end of their useful life.
 var supportedMACs = []string{
-	"hmac-sha2-512-etm@openssh.com", "hmac-sha2-256-etm@openssh.com", "hmac-sha2-256", "hmac-sha2-512", "hmac-sha1", "hmac-sha1-96",
+	"hmac-sha2-256-etm@openssh.com", "hmac-sha2-512-etm@openssh.com", "hmac-sha2-256", "hmac-sha2-512", "hmac-sha1", "hmac-sha1-96",
 }
 
 var supportedCompressions = []string{compressionNone}
@@ -117,6 +117,13 @@ func algorithmsForKeyFormat(keyFormat string) []string {
 	default:
 		return []string{keyFormat}
 	}
+}
+
+// isRSA returns whether algo is a supported RSA algorithm, including certificate
+// algorithms.
+func isRSA(algo string) bool {
+	algos := algorithmsForKeyFormat(KeyAlgoRSA)
+	return contains(algos, underlyingAlgo(algo))
 }
 
 // supportedPubKeyAuthAlgos specifies the supported client public key
