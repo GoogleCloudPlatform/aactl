@@ -1,6 +1,6 @@
 module github.com/GoogleCloudPlatform/aactl
 
-go 1.20
+go 1.23.0
 
 require (
 	cloud.google.com/go/containeranalysis v0.10.1
@@ -21,8 +21,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/compute v1.20.1 // indirect
-	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	cloud.google.com/go/grafeas v0.3.0 // indirect
 	cloud.google.com/go/iam v1.1.1 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
@@ -186,7 +185,7 @@ require (
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
 	golang.org/x/mod v0.11.0 // indirect
-	golang.org/x/oauth2 v0.9.0 // indirect
+	golang.org/x/oauth2 v0.27.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/term v0.10.0 // indirect
