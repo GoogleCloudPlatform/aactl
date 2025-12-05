@@ -23,6 +23,7 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
+	"sync"
 	"text/tabwriter"
 	"time"
 
@@ -39,13 +40,13 @@ var (
 	// Output of "git describe". The prerequisite is that the
 	// branch should be tagged using the correct versioning strategy.
 	gitVersion = "devel"
-	// SHA1 from git, output of $(git rev-parse HEAD)
+	// SHA1 from git, output of $(git rev-parse HEAD).
 	gitCommit = unknown
-	// State of git tree, either "clean" or "dirty"
+	// State of git tree, either "clean" or "dirty".
 	gitTreeState = unknown
-	// Build date in ISO8601 format, output of $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+	// Build date in ISO8601 format, output of $(date -u +'%Y-%m-%dT%H:%M:%SZ').
 	buildDate = unknown
-	// flag to print the ascii name banner
+	// flag to print the ascii name banner.
 	asciiName = "true"
 	// goVersion is the used golang version.
 	goVersion = unknown
@@ -53,6 +54,9 @@ var (
 	compiler = unknown
 	// platform is the used os/arch identifier.
 	platform = unknown
+
+	once sync.Once
+	info = Info{}
 )
 
 type Info struct {
@@ -75,6 +79,7 @@ func getBuildInfo() *debug.BuildInfo {
 	if !ok {
 		return nil
 	}
+
 	return bi
 }
 
@@ -100,18 +105,22 @@ func getDirty(bi *debug.BuildInfo) string {
 	if modified == "true" {
 		return "dirty"
 	}
+
 	if modified == "false" {
 		return "clean"
 	}
+
 	return unknown
 }
 
 func getBuildDate(bi *debug.BuildInfo) string {
 	buildTime := getKey(bi, "vcs.time")
+
 	t, err := time.Parse("2006-01-02T15:04:05Z", buildTime)
 	if err != nil {
 		return unknown
 	}
+
 	return t.Format("2006-01-02T15:04:05")
 }
 
@@ -119,55 +128,62 @@ func getKey(bi *debug.BuildInfo, key string) string {
 	if bi == nil {
 		return unknown
 	}
+
 	for _, iter := range bi.Settings {
 		if iter.Key == key {
 			return iter.Value
 		}
 	}
+
 	return unknown
 }
 
 // GetVersionInfo represents known information on how this binary was built.
 func GetVersionInfo() Info {
-	buildInfo := getBuildInfo()
-	gitVersion = getGitVersion(buildInfo)
-	if gitCommit == unknown {
-		gitCommit = getCommit(buildInfo)
-	}
+	once.Do(func() {
+		buildInfo := getBuildInfo()
+		gitVersion = getGitVersion(buildInfo)
 
-	if gitTreeState == unknown {
-		gitTreeState = getDirty(buildInfo)
-	}
+		if gitCommit == unknown {
+			gitCommit = getCommit(buildInfo)
+		}
 
-	if buildDate == unknown {
-		buildDate = getBuildDate(buildInfo)
-	}
+		if gitTreeState == unknown {
+			gitTreeState = getDirty(buildInfo)
+		}
 
-	if goVersion == unknown {
-		goVersion = runtime.Version()
-	}
+		if buildDate == unknown {
+			buildDate = getBuildDate(buildInfo)
+		}
 
-	if compiler == unknown {
-		compiler = runtime.Compiler
-	}
+		if goVersion == unknown {
+			goVersion = runtime.Version()
+		}
 
-	if platform == unknown {
-		platform = fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH)
-	}
+		if compiler == unknown {
+			compiler = runtime.Compiler
+		}
 
-	return Info{
-		ASCIIName:    asciiName,
-		GitVersion:   gitVersion,
-		GitCommit:    gitCommit,
-		GitTreeState: gitTreeState,
-		BuildDate:    buildDate,
-		GoVersion:    goVersion,
-		Compiler:     compiler,
-		Platform:     platform,
-	}
+		if platform == unknown {
+			platform = fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH)
+		}
+
+		info = Info{
+			ASCIIName:    asciiName,
+			GitVersion:   gitVersion,
+			GitCommit:    gitCommit,
+			GitTreeState: gitTreeState,
+			BuildDate:    buildDate,
+			GoVersion:    goVersion,
+			Compiler:     compiler,
+			Platform:     platform,
+		}
+	})
+
+	return info
 }
 
-// String returns the string representation of the version info
+// String returns the string representation of the version info.
 func (i *Info) String() string {
 	b := strings.Builder{}
 	w := tabwriter.NewWriter(&b, 0, 0, 2, ' ', 0)
@@ -178,10 +194,12 @@ func (i *Info) String() string {
 			f := figure.NewFigure(strings.ToUpper(i.Name), i.FontName, true)
 			_, _ = fmt.Fprint(w, f.String())
 		}
+
 		_, _ = fmt.Fprint(w, i.Name)
 		if i.Description != "" {
 			_, _ = fmt.Fprintf(w, ": %s", i.Description)
 		}
+
 		_, _ = fmt.Fprint(w, "\n\n")
 	}
 
@@ -194,10 +212,11 @@ func (i *Info) String() string {
 	_, _ = fmt.Fprintf(w, "Platform:\t%s\n", i.Platform)
 
 	_ = w.Flush()
+
 	return b.String()
 }
 
-// JSONString returns the JSON representation of the version info
+// JSONString returns the JSON representation of the version info.
 func (i *Info) JSONString() (string, error) {
 	b, err := json.MarshalIndent(i, "", "  ")
 	if err != nil {
@@ -217,5 +236,6 @@ func (i *Info) CheckFontName(fontName string) bool {
 	}
 
 	fmt.Fprintln(os.Stderr, "font not valid, using default")
+
 	return false
 }

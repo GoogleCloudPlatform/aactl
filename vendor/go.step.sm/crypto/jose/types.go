@@ -1,4 +1,4 @@
-// Package jose is a wrapper for gopkg.in/square/go-jose.v2 and implements
+// Package jose is a wrapper for github.com/go-jose/go-jose/v3 and implements
 // utilities to parse and generate JWT, JWK and JWKSets.
 package jose
 
@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
+	jose "github.com/go-jose/go-jose/v3"
+	"github.com/go-jose/go-jose/v3/cryptosigner"
+	"github.com/go-jose/go-jose/v3/jwt"
 	"go.step.sm/crypto/x25519"
-	jose "gopkg.in/square/go-jose.v2"
-	"gopkg.in/square/go-jose.v2/cryptosigner"
-	"gopkg.in/square/go-jose.v2/jwt"
 )
 
 // SupportsPBKDF2 constant to know if the underlaying library supports
@@ -133,7 +133,7 @@ var ErrIssuedInTheFuture = jwt.ErrIssuedInTheFuture
 
 // Key management algorithms
 //
-//nolint:stylecheck,revive // use standard names in upper-case
+//nolint:staticcheck,revive // use standard names in upper-case
 const (
 	RSA1_5             = KeyAlgorithm("RSA1_5")             // RSA-PKCS1v1.5
 	RSA_OAEP           = KeyAlgorithm("RSA-OAEP")           // RSA-OAEP-SHA1
@@ -174,7 +174,7 @@ const (
 
 // Content encryption algorithms
 //
-//nolint:revive,stylecheck // use standard names in upper-case
+//nolint:revive,staticcheck // use standard names in upper-case
 const (
 	A128CBC_HS256 = ContentEncryption("A128CBC-HS256") // AES-CBC + HMAC-SHA256 (128)
 	A192CBC_HS384 = ContentEncryption("A192CBC-HS384") // AES-CBC + HMAC-SHA384 (192)
@@ -248,9 +248,7 @@ func UnixNumericDate(s int64) *NumericDate {
 
 // NewSigner creates an appropriate signer based on the key type
 func NewSigner(sig SigningKey, opts *SignerOptions) (Signer, error) {
-	if k, ok := sig.Key.(x25519.PrivateKey); ok {
-		sig.Key = X25519Signer(k)
-	}
+	sig.Key = guessOpaqueSigner(sig.Key)
 	if sig.Algorithm == "" {
 		sig.Algorithm = guessSignatureAlgorithm(sig.Key)
 	}
@@ -301,10 +299,10 @@ func IsAsymmetric(k *JSONWebKey) bool {
 	return !IsSymmetric(k)
 }
 
-// TrimPrefix removes the string "square/go-jose" from all errors.
+// TrimPrefix removes the string "go-jose/go-jose" from all errors.
 func TrimPrefix(err error) error {
 	if err == nil {
 		return nil
 	}
-	return errors.New(strings.TrimPrefix(err.Error(), "square/go-jose: "))
+	return errors.New(strings.TrimPrefix(err.Error(), "go-jose/go-jose: "))
 }
