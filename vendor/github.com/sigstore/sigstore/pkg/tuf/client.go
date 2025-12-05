@@ -37,7 +37,6 @@ import (
 	"github.com/theupdateframework/go-tuf/client"
 	tuf_leveldbstore "github.com/theupdateframework/go-tuf/client/leveldbstore"
 	"github.com/theupdateframework/go-tuf/data"
-	_ "github.com/theupdateframework/go-tuf/pkg/deprecated/set_ecdsa"
 	"github.com/theupdateframework/go-tuf/util"
 )
 
@@ -72,6 +71,7 @@ var (
 // getRemoteRoot is a var for testing.
 var getRemoteRoot = func() string { return DefaultRemoteRoot }
 
+// Deprecated: Use https://pkg.go.dev/github.com/sigstore/sigstore-go/pkg/tuf
 type TUF struct {
 	sync.Mutex
 	client   *client.Client
@@ -110,6 +110,7 @@ type MetadataStatus struct {
 }
 
 type TargetFile struct {
+	Name   string
 	Target []byte
 	Status StatusKind
 }
@@ -117,6 +118,7 @@ type TargetFile struct {
 type customMetadata struct {
 	Usage  UsageKind  `json:"usage"`
 	Status StatusKind `json:"status"`
+	URI    string     `json:"uri"`
 }
 
 type sigstoreCustomMetadata struct {
@@ -370,15 +372,17 @@ func Initialize(_ context.Context, mirror string, root []byte) error {
 }
 
 // Checks if the testTarget matches the valid target file metadata.
-func isValidTarget(testTarget []byte, validMeta data.TargetFileMeta) bool {
-	localMeta, err := util.GenerateTargetFileMeta(bytes.NewReader(testTarget))
+func isValidTarget(testTarget []byte, validMeta data.TargetFileMeta) (bool, error) {
+	localMeta, err := util.GenerateTargetFileMeta(
+		bytes.NewReader(testTarget),
+		"sha256", "sha512")
 	if err != nil {
-		return false
+		return false, err
 	}
 	if err := util.TargetFileMetaEqual(localMeta, validMeta); err != nil {
-		return false
+		return false, err
 	}
-	return true
+	return true, nil
 }
 
 func (t *TUF) GetTarget(name string) ([]byte, error) {
@@ -394,8 +398,8 @@ func (t *TUF) GetTarget(name string) ([]byte, error) {
 		return nil, err
 	}
 
-	if !isValidTarget(targetBytes, validMeta) {
-		return nil, fmt.Errorf("cache contains invalid target; local cache may be corrupt")
+	if valid, err := isValidTarget(targetBytes, validMeta); !valid {
+		return nil, fmt.Errorf("cache contains invalid target; local cache may be corrupt: %w", err)
 	}
 
 	return targetBytes, nil
@@ -427,7 +431,7 @@ func (t *TUF) GetTargetsByMeta(usage UsageKind, fallbacks []string) ([]TargetFil
 			if err != nil {
 				return nil, fmt.Errorf("error getting target %s by usage: %w", name, err)
 			}
-			matchedTargets = append(matchedTargets, TargetFile{Target: target, Status: scm.Sigstore.Status})
+			matchedTargets = append(matchedTargets, TargetFile{Name: name, Target: target, Status: scm.Sigstore.Status})
 		}
 	}
 	if len(matchedTargets) == 0 {
@@ -437,7 +441,7 @@ func (t *TUF) GetTargetsByMeta(usage UsageKind, fallbacks []string) ([]TargetFil
 				fmt.Fprintf(os.Stderr, "**Warning** Missing fallback target %s, skipping\n", fallback)
 				continue
 			}
-			matchedTargets = append(matchedTargets, TargetFile{Target: target, Status: Active})
+			matchedTargets = append(matchedTargets, TargetFile{Name: fallback, Target: target, Status: Active})
 		}
 	}
 	if len(matchedTargets) == 0 {
@@ -450,37 +454,7 @@ func (t *TUF) GetTargetsByMeta(usage UsageKind, fallbacks []string) ([]TargetFil
 func (t *TUF) updateClient() (data.TargetFiles, error) {
 	targets, err := t.client.Update()
 	if err != nil {
-		// Get some extra information for debugging. What was the state of the top-level
-		// metadata on the remote?
-		status := struct {
-			Mirror   string                    `json:"mirror"`
-			Metadata map[string]MetadataStatus `json:"metadata"`
-		}{
-			Mirror:   t.Mirror(),
-			Metadata: make(map[string]MetadataStatus),
-		}
-		for _, md := range []string{"root.json", "targets.json", "snapshot.json", "timestamp.json"} {
-			r, _, err := t.remote.GetMeta(md)
-			if err != nil {
-				// May be missing, or failed download.
-				continue
-			}
-			defer r.Close()
-			b, err := io.ReadAll(r)
-			if err != nil {
-				continue
-			}
-			mdStatus, err := getMetadataStatus(b)
-			if err != nil {
-				continue
-			}
-			status.Metadata[md] = *mdStatus
-		}
-		b, innerErr := json.MarshalIndent(status, "", "\t")
-		if innerErr != nil {
-			return nil, innerErr
-		}
-		return nil, fmt.Errorf("error updating to TUF remote mirror: %w\nremote status:%s", err, string(b))
+		return nil, fmt.Errorf("error updating to TUF remote mirror: %w", err)
 	}
 	// Success! Cache new metadata, if needed.
 	if noCache() {
@@ -540,7 +514,7 @@ func maybeDownloadRemoteTarget(name string, meta data.TargetFileMeta, t *TUF) er
 	// If we already have the target locally, don't bother downloading from remote storage.
 	if cachedTarget, err := t.targets.Get(name); err == nil {
 		// If the target we have stored matches the meta, use that.
-		if isValidTarget(cachedTarget, meta) {
+		if valid, _ := isValidTarget(cachedTarget, meta); valid {
 			return nil
 		}
 	}
@@ -561,7 +535,7 @@ func maybeDownloadRemoteTarget(name string, meta data.TargetFileMeta, t *TUF) er
 			b = bytes.ReplaceAll(b, []byte("\r\n"), []byte("\n"))
 		}
 
-		if isValidTarget(b, meta) {
+		if valid, _ := isValidTarget(b, meta); valid {
 			if _, err := io.Copy(&w, bytes.NewReader(b)); err != nil {
 				return fmt.Errorf("using embedded target: %w", err)
 			}

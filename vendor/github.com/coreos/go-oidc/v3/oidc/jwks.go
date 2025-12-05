@@ -8,12 +8,11 @@ import (
 	"crypto/rsa"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"sync"
-	"time"
 
-	jose "github.com/go-jose/go-jose/v3"
+	jose "github.com/go-jose/go-jose/v4"
 )
 
 // StaticKeySet is a verifier that validates JWT against a static set of public keys.
@@ -25,7 +24,9 @@ type StaticKeySet struct {
 
 // VerifySignature compares the signature against a static set of public keys.
 func (s *StaticKeySet) VerifySignature(ctx context.Context, jwt string) ([]byte, error) {
-	jws, err := jose.ParseSigned(jwt)
+	// Algorithms are already checked by Verifier, so this parse method accepts
+	// any algorithm.
+	jws, err := jose.ParseSigned(jwt, allAlgs)
 	if err != nil {
 		return nil, fmt.Errorf("parsing jwt: %v", err)
 	}
@@ -55,22 +56,29 @@ func (s *StaticKeySet) VerifySignature(ctx context.Context, jwt string) ([]byte,
 // The returned KeySet is a long lived verifier that caches keys based on any
 // keys change. Reuse a common remote key set instead of creating new ones as needed.
 func NewRemoteKeySet(ctx context.Context, jwksURL string) *RemoteKeySet {
-	return newRemoteKeySet(ctx, jwksURL, time.Now)
+	return newRemoteKeySet(ctx, jwksURL)
 }
 
-func newRemoteKeySet(ctx context.Context, jwksURL string, now func() time.Time) *RemoteKeySet {
-	if now == nil {
-		now = time.Now
+func newRemoteKeySet(ctx context.Context, jwksURL string) *RemoteKeySet {
+	return &RemoteKeySet{
+		jwksURL: jwksURL,
+		// For historical reasons, this package uses contexts for configuration, not just
+		// cancellation. In hindsight, this was a bad idea.
+		//
+		// Attemps to reason about how cancels should work with background requests have
+		// largely lead to confusion. Use the context here as a config bag-of-values and
+		// ignore the cancel function.
+		ctx: context.WithoutCancel(ctx),
 	}
-	return &RemoteKeySet{jwksURL: jwksURL, ctx: ctx, now: now}
 }
 
 // RemoteKeySet is a KeySet implementation that validates JSON web tokens against
 // a jwks_uri endpoint.
 type RemoteKeySet struct {
 	jwksURL string
-	ctx     context.Context
-	now     func() time.Time
+
+	// Used for configuration. Cancelation is ignored.
+	ctx context.Context
 
 	// guard all other fields
 	mu sync.RWMutex
@@ -127,8 +135,13 @@ var parsedJWTKey contextKey
 func (r *RemoteKeySet) VerifySignature(ctx context.Context, jwt string) ([]byte, error) {
 	jws, ok := ctx.Value(parsedJWTKey).(*jose.JSONWebSignature)
 	if !ok {
+		// The algorithm values are already enforced by the Validator, which also sets
+		// the context value above to pre-parsed signature.
+		//
+		// Practically, this codepath isn't called in normal use of this package, but
+		// if it is, the algorithms have already been checked.
 		var err error
-		jws, err = jose.ParseSigned(jwt)
+		jws, err = jose.ParseSigned(jwt, allAlgs)
 		if err != nil {
 			return nil, fmt.Errorf("oidc: malformed jwt: %v", err)
 		}
@@ -159,7 +172,7 @@ func (r *RemoteKeySet) verify(ctx context.Context, jws *jose.JSONWebSignature) (
 	// https://openid.net/specs/openid-connect-core-1_0.html#RotateSigKeys
 	keys, err := r.keysFromRemote(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("fetching keys %v", err)
+		return nil, fmt.Errorf("fetching keys %w", err)
 	}
 
 	for _, key := range keys {
@@ -228,11 +241,11 @@ func (r *RemoteKeySet) updateKeys() ([]jose.JSONWebKey, error) {
 
 	resp, err := doRequest(r.ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("oidc: get keys failed %v", err)
+		return nil, fmt.Errorf("oidc: get keys failed %w", err)
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("unable to read response body: %v", err)
 	}
